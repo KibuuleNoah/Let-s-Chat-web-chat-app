@@ -1,0 +1,53 @@
+/* body{ */
+/*   display: flex; */
+/*   align-items: center; */
+/*   justify-content: center; */
+/* } */
+/* .already{ */
+/* } */
+
+.profile{
+  display: grid;
+  color: green;
+  grid-template-areas: 
+    "photo photo"
+    "name Name"
+    "freinds Num-Freinds"
+    "totalmessages Num-messages";
+  gap: 3;
+  border: 3px solid;
+  padding: 4px;
+  /* align-items: center; */
+  /* justify-content: center; */
+}
+
+.photo{
+  grid-area: photo;
+}
+.name{
+  grid-area: name;
+}
+.Name{
+  grid-area: Name;
+}
+.freinds{
+  grid-area: freinds;
+}
+.Num-Freinds{
+  grid-area: Num-Freinds;
+}
+
+.totalmessages{
+  grid-area: totalmessages;
+}
+.Num-messages{
+  grid-area: Num-messages;
+}
+
+.change-btns{
+  display: grid;
+  grid-template-columns: 50% 50%;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+}

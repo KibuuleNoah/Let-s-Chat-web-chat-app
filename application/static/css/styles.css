@@ -1,0 +1,100 @@
+/* body{ */
+/*   display: flex; */
+/*   align-items: center; */
+/*   justify-content: center; */
+/* } */
+/* .already{ */
+/* } */
+html{
+  scroll-behavior: smooth;
+}
+
+.profile{
+  display: grid;
+  color: green;
+  grid-template-areas: 
+    "photo photo"
+    "name Name"
+    "freinds Num-Freinds"
+    "totalmessages Num-messages";
+  gap: 3;
+  border: 3px solid;
+  padding: 4px;
+  /* align-items: center; */
+  /* justify-content: center; */
+}
+
+.photo{
+  grid-area: photo;
+}
+.name{
+  grid-area: name;
+}
+.Name{
+  grid-area: Name;
+}
+.freinds{
+  grid-area: freinds;
+}
+.Num-Freinds{
+  grid-area: Num-Freinds;
+}
+
+.totalmessages{
+  grid-area: totalmessages;
+}
+.Num-messages{
+  grid-area: Num-messages;
+}
+
+.change-btns{
+  display: grid;
+  grid-template-columns: 50% 50%;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+}
+
+.card{
+  position: static;
+  max-width: 86%;
+}
+
+.blur{
+  backdrop-filter: blur(2px);
+}
+
+.h-img{
+  border: 3px solid white;
+  border-radius: 50%;
+  width: 3ex;
+  height: 3ex;
+
+}
+/* body{ */
+/* ; */
+/* } */
+
+/*card { 
+
+            margin-right: auto; 
+
+            margin-left: auto; 
+
+            width: 250px; 
+
+            box-shadow: 0 15px 25px rgba(129, 124, 124, 0.2); 
+
+            height: 300px; 
+
+            border-radius: 5px; 
+
+            backdrop-filter: blur(14px); 
+
+            background-color: rgba(255, 255, 255, 0.2); 
+
+            padding: 10px; 
+
+            text-align: center; 
+
+        } */

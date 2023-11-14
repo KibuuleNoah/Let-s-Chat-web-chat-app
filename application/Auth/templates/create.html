@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}create{% endblock%}
+{% block content %}
+<nav class="navbar bg-info navbar-dark">
+  <div class="container">
+    <span class="navbar-brand text-center">Test</span>
+  </div>
+</nav>
+<h1 align="center">WELCOME</h1>
+<br>
+<form class="m-3" method="POST" name="create-form" onsubmit="return validateCreateForm()">
+  <div class="m-4 d-flex justify-content-center">
+   <label class="form-label" for="name">User Name*
+     <input class="form-control" type="text" name="name" id="name" placeholder="Name  (Ex. john doe)" required>
+   </label>
+  </div>
+  <div class="m-4 d-flex justify-content-center">
+   <label class="form-label" for="password1">Password*
+     <input class="form-control" type="password" name="password1" id="password1" placeholder="password" required>
+   </label>
+  </div>
+  <div class="m-4 d-flex justify-content-center">
+     <label class="form-label" for="password2">Confirm Password*
+       <input class="form-control" type="password" name="password2" id="password2" placeholder="password" required>
+     </label>
+  </div>
+  <div class="d-flex justify-content-center">
+    <button class="btn btn-outline-info" type="submit">create</button>
+  </div>
+</form>
+<div class="d-flex justify-content-center">
+ <div class="d-flex justify-content-center">
+  <p id="last">already have an account <a href="/auth/login">login?</a></p>
+ </div>  
+</div>
+{% endblock %}
