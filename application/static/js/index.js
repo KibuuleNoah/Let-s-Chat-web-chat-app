@@ -74,7 +74,7 @@ const validateCreateForm = () => {
     flash(form["password1"],"too weak password, should have 2 digits min,3 lower letters(min) 1 upper letter and symbol(min)");
     return false
   }
-  else if (form["password1"].value != "booooo"){
+  else if (form["password1"].value != form["password2"].value){
     flash(form["password2"],"this password doesn't match the first one")
     return false;
   }
@@ -142,22 +142,35 @@ if (document.title == "create" || document.title == "login" || document.title ==
 
 
 if (document.title == "one-on-one"){
+  var userId = null
+  // var userSid = null
   let msgContainerOne = document.getElementById("messages-one")
   let msgInputOne = document.getElementById("msginput-one");
   let sendBtnOne = document.getElementById("sendbtn-one")
+  
+  socketio.emit("user_join_one")
+  socketio.on("send_ids",(id)=>{
+    userId = id;
+    alert(id);
+      
+    // userSid = idObj.sid; 
+  })
   sendBtnOne.addEventListener("click",()=>{
     socketio.emit("message-one",msgInputOne.value);
     msgInputOne.value = "";
     document.getElementById("bottompage").scrollIntoView();
   })
+  const giveMessageDirection = (id1,id2) => id1 === id2 ? "end" : "start"
 
   socketio.on("message-one",(msgObj)=>{
     message = document.createElement("div");
-    message.setAttribute("class","card align-self-end mb-3 pb-0 ml-0");
+    let direction = giveMessageDirection(msgObj.id,userId)
+
+    message.setAttribute("class",`card align-self-${direction} mb-3 pb-0 ml-0`);
     message.innerHTML = `
-    <div class="card-body pb-0">
-      <p class="card-text mb-0 pb-0">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
-      <p class="card-text m-0 p-0" style="text-align: right;"><small class="text-body-secondary">12:00 am</small></p>
+    <div class="card-body pb-0">${userId} ${direction}
+      <p class="card-text mb-0 pb-0">${msgObj.message}</p>
+      <p class="card-text m-0 p-0" style="text-align: right;"><small class="text-body-secondary">${msgObj.time}</small></p>
     </div>
     `;
     msgContainerOne.appendChild(message);

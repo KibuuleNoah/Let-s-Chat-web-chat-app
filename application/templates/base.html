@@ -11,6 +11,28 @@
     <link rel="stylesheet" href="{{url_for('static',filename='css/styles.css')}}" rel="stylesheet">
   </head>
   <body>
+    {% block navbar %}{% endblock %}
+    
+    {% with messages = get_flashed_messages(with_categories=true) %} 
+    {% if messages %} 
+    {% for category, message in messages %} 
+    {% if category =='error' %}
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+      {{message}}
+      <!-- <strong>Holy guacamole!</strong> You should check in on some of those fields below. -->
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% else %}
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+      {{message}}
+      <!-- <strong>Holy guacamole!</strong> You should check in on some of those fields below. -->
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endif %} 
+    {% endfor %}
+    {% endif %} 
+    {% endwith %}
+
     {% block content %}{% endblock %}
     <script src="//cdn.jsdelivr.net/npm/eruda"></script>
     <script>eruda.init();</script>

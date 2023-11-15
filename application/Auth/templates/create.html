@@ -1,11 +1,14 @@
 {% extends "base.html" %}
 {% block title %}create{% endblock%}
-{% block content %}
+{% block navbar %}
 <nav class="navbar bg-info navbar-dark">
   <div class="container">
     <span class="navbar-brand text-center">Test</span>
   </div>
 </nav>
+{% endblock %}
+
+{% block content %}
 <h1 align="center">WELCOME</h1>
 <br>
 <form class="m-3" method="POST" name="create-form" onsubmit="return validateCreateForm()">

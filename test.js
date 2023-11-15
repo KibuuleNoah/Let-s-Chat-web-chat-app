@@ -1,6 +1,5 @@
-// let regex = /^(?=(.*\d){2,})(?=(.*[a-z]){3,})(?=(.*[A-Z]){1,})(?=(.*\W){1,}).{6,12}$/;
-// let str = "fhF5u76#|#";
-// console.log(regex.test(str))
-const isdigit = (str)=>/^[0-9].+/.test(str);
-let s = "8jjjjgy";
-console.log(isdigit(s))
+const giveMessageDirection = (id1,id2) => id1 == id2 ? "end" : "start"
+
+id1 = 577,id2 = 570
+
+console.log(giveMessageDirection(id1,id2))

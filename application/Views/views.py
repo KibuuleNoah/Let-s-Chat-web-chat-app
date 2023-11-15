@@ -1,4 +1,5 @@
 from flask import render_template, request, url_for, Blueprint, flash
+from flask_login import current_user
 import string
 
 views = Blueprint("views", __name__, template_folder="templates", url_prefix="/vws")
@@ -35,4 +36,5 @@ def room():
 
 @views.route("/oneonone")
 def one_on_one():
+    print(f"\n{current_user}\n")
     return render_template("one_on_one.html")
