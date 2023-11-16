@@ -1,4 +1,6 @@
 let messageInput = document.getElementById("message-input");
+var userId = 0 
+var room = ""
 
 const socketio = io({autoConnect:false});
 socketio.connect()
@@ -140,23 +142,49 @@ if (document.title == "create" || document.title == "login" || document.title ==
   }
 }
 
+if (document.title == "dashboard"){
+  alert("dashboard")
+  fBtn = document.getElementById("f")
+  fBtn.addEventListener("click",()=>{
+    socketio.emit("user_join_one",fBtn.value)
+    // window.location.href = "/vws/oneonone"
+  //   socketio.on("send_ids",(idObj)=>{
+  // 
+  //     userId = idObj.user_id 
+  //     room = idObj.room
+  //     // console.log(userId,room) 
+  //   })
+    window.location.href = "/vws/oneonone"
+    // socketio.emit("user_join_one",{room:fBtn.value})
+  })
+  // var userId = 0 
+  // var room = null;
+  
+}
 
 if (document.title == "one-on-one"){
-  var userId = null
+  socketio.emit("reach","k");
+  // var userId = null
   // var userSid = null
   let msgContainerOne = document.getElementById("messages-one")
   let msgInputOne = document.getElementById("msginput-one");
   let sendBtnOne = document.getElementById("sendbtn-one")
   
-  socketio.emit("user_join_one")
-  socketio.on("send_ids",(id)=>{
-    userId = id;
-    alert(id);
-      
-    // userSid = idObj.sid; 
+  // socketio.emit("user_join_one")
+  // socketio.on("send_ids",(id)=>{
+  //   userId = id;
+  //   alert(id);
+  //     
+  //   // userSid = idObj.sid; 
+  // })
+  socketio.on("send_ids",(idObj)=>{
+    userId = idObj.user_id 
+    room = idObj.room
+    // alert(userId,room)
   })
+
   sendBtnOne.addEventListener("click",()=>{
-    socketio.emit("message-one",msgInputOne.value);
+    socketio.emit("message-one",{"message" : msgInputOne.value,"room" : room });
     msgInputOne.value = "";
     document.getElementById("bottompage").scrollIntoView();
   })
@@ -168,7 +196,7 @@ if (document.title == "one-on-one"){
 
     message.setAttribute("class",`card align-self-${direction} mb-3 pb-0 ml-0`);
     message.innerHTML = `
-    <div class="card-body pb-0">${userId} ${direction}
+    <div class="card-body pb-0">${msgObj.id} ${direction}
       <p class="card-text mb-0 pb-0">${msgObj.message}</p>
       <p class="card-text m-0 p-0" style="text-align: right;"><small class="text-body-secondary">${msgObj.time}</small></p>
     </div>

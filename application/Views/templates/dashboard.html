@@ -1,14 +1,7 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <title></title>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="css/style.css" rel="stylesheet">
-  </head>
-  <body>
-   <button type="button" value="room1">room1</button>  
-   <button type="button" value="room2">room1</button>  
-   <button type="button" value="room3">room1</button>  
-  </body>
-</html>
+{% extends "base.html"%}
+{% block title %}dashboard{% endblock %}
+{% block content %}
+<button id="f" type="button" value="room1">room1</button>
+<button id="s" type="button" value="room2">room2</button>  
+<button id="t" type="button" value="room3">room3</button>  
+{% endblock %}
