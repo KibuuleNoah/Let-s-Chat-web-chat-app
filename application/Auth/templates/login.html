@@ -1,11 +1,14 @@
 {% extends "base.html" %}
 {% block title %}login{% endblock%}
-{% block content %}
+{% block navbar %}
 <nav class="mb-4 navbar bg-info">
   <div class="comtainer">
     <span class="navbar-brand">App Name</span>
   </div>
 </nav>
+{% endblock %}
+
+{% block content %}
 <h1 align="center">WELCOME BACK</h1>
 
 <form method="POST" name="login-form" onSubmit="return validateLoginForm()">

@@ -1,0 +1,254 @@
+Using the Rooms or rooms in Flask SocketIO
+26-05-2023 - ANDRÉS CRUZ
+
+
+Categorías
+/
+Flask
+/
+Using the Rooms or rooms in Flask SocketIO
+En español
+Flask-SocketIO is a Flask extension that enables the integration of WebSockets into a Flask application, allowing real-time, two-way communication between server and client without the need for constant page refreshes; For example, in a chat type app, you send the message to the server, to another person or group of people; but, it can also receive messages, therefore, in the classic client-server scheme it is not possible to obtain the message in the same way that you send them, therefore you would have to edit reloading or sending requests to the server every certain changes to check if you have possible messages, but, in full duplex communication there is a channel between the server and the client (the reverse) and there is no need to send requests to the server every so often (which is an inefficient approach).
+
+Flask-SocketIO uses a WebSocket implementation of the JavaScript Socket.IO library, which is cross-browser compatible and supports room creation to handle multiple simultaneous connections. In addition, it provides functions to send messages to the client and receive messages from the client in real time.
+
+
+Communication between clients and servers is part of any application available today that is on the Internet. Web sockets are a protocol developed to facilitate this process. They allow us to establish a bidirectional contact between a client (or several clients) and a server. You can think of your web browser as a client, for example. The server can be a background program running on your system.
+
+WebSocket is a communication protocol for the client-server model; To understand WebSocket, it's best to compare the specialty of WebSocket over HTTPS.
+
+http vs websocket
+http vs websocket
+
+There are some advantages of WebSocket over HTTPS, but above all they go through the possibility of creating a full duplex channel between the client and server, and the possibility of creating rooms to host clients, creating broadcasts, among others.
+
+The use of the Websoket is very easy in Flask, as it happens with other possible dependencies, we can install a plugin with which to have complete control of the webSokect in Flask and enable a special server to be able to use the websokect.
+
+
+In this entry, we will see how we can create rooms to communicate with several clients among themselves, with messages to the server and vice versa.
+
+Create our Room
+The use of the rooms is a mechanism that allows us to have greater control over the users that can connect to our duplex channels from the client and the server; unlike the communication that we have in Flask SocketIO in which we do not have this control, since any user who enters the section of our website in which we enable the sockets, as we show in:
+
+
+You will be able to have full access to them without any control; but with the rooms we can now indicate which user is going to join or leave a room; this gives us much more control over which user can or cannot access to see the messages that we share for that room; For this, we put one more parameter to communication both on the server and on the client when emitting the events:
+
+emit('chat', message['message'], broadcast=True, to=message['room'])
+socket.emit('chat', { message: message.value.trim(), room:"room{{current_user.id}}"})
+Join and leave rooms
+So now we are going to use two more functions to be able to join or leave a room.
+
+To join a room:
+
+join_room 
+And to leave a room:
+
+leave_room
+Server
+The chat function, which we use to send messages from the server; i.e. Flask:
+
+@socketio.on('chat')
+def chat(message):    
+    print("chat "+str(message))
+    emit('chat', message['message'], broadcast=True, to=message['room'])
+
+In this function we emit an event, passed from the client and with the broadcast we indicate that all the clients that are listening to the room of message['room'] will receive this message; this function is used from the client as we will see in a few moments.
+
+Client
+And from the client, i.e. JavaScript:
+
+ function sendMsj() {
+    message = document.querySelector("#message")
+    if (message.value.trim() == "")
+       return alert("No hay mensaje que enviar")
+    socket.emit('chat', { message: message.value.trim(), room:"room"})
+    message.value = ""
+}
+In this function we make the typical verifications to know if we have data, after this, through the emit function, we emit the event to the chat function hosted on the server, the one we saw previously.
+
+Server
+Going back to the server, it's important to note that, to use a socket, we need to join and also be able to leave that group; as we mentioned before, for this there are the join_room and leave_room functions, in which, with the session enabled, we join or leave the group respectively.
+
+Finally, the functions to join or leave the group that we use:
+
+
+@socketio.on('join')
+def join(room):
+    username=current_user.name   
+    print("Join")
+    join_room(room['room'])
+    emit('join', username+" se unio a la habitacion", to=room['room'])
+@socketio.on('leave')
+def leave(room):
+    username=current_user.name   
+    print("leave")
+    leave_room(room['room'])
+    emit('leave', username+" abandono la habitacion", to=room['room'])
+As you can see, to make it a bit more interesting, we use Flask Login to have different data for each user that makes a connection.
+
+You can take the room parameter from anywhere, a reference that comes from the view, database, etc; In this example we have it set by default from the client's chat function.
+
+With this, we can send messages that only the users who are assigned after prior access to the room called "room" will hear; for that we have a couple of buttons:
+
+<button onclick="join()">Unir</button>
+<button onclick="leave()">Abandonar</button>
+And their corresponding functions:
+
+function join(){
+     socket.emit('join', { room:"room{{current_user.id}}"})
+}
+function leave(){
+  socket.emit('leave', { room:"room{{current_user.id}}"})
+}
+Finally, I leave you the complete code that is part of my complete Flask with Python course:
+
+
+from flask import Blueprint,render_template
+from flask_socketio import emit, join_room, leave_room
+from flask_login import login_required, current_user
+from app import db, socketio
+from app.user.models import User
+from app.chat.models import MessageRoom
+from datetime import datetime
+roomBp = Blueprint('room',__name__)
+@roomBp.route("/room")
+@login_required
+def index():
+    return render_template("room/index.html")
+@socketio.on('chat')
+@login_required
+def chat(message):    
+    print("Estamos en evento "+str(message))
+    emit('chat', message['message'], broadcast=True, to=message['room'])
+@socketio.on('join')
+@login_required
+def join(room):
+    username=current_user.name   
+    print("Join")
+    join_room(room['room'])
+    emit('join', username+" se unio a la habitacion", to=room['room'])
+@socketio.on('leave')
+@login_required
+def leave(room):
+    username=current_user.name   
+    print("leave")
+    leave_room(room['room'])
+    emit('leave', username+" se unio a la habitacion", to=room['room'])
+In chat view:
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sokect en Flask</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"
+        integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA=="
+        crossorigin="anonymous"></script>
+</head>
+<body>
+    <textarea id="message"></textarea>
+    <button onclick="sendMsj()">Enviar</button>
+    <button onclick="join()">Unir</button>
+    <button onclick="leave()">Abandonar</button>
+    <script>
+        var socket = io()
+        function join(){
+            socket.emit('join', { room:"room{{current_user.id}}"})
+        }
+        function leave(){
+            socket.emit('leave', { room:"room{{current_user.id}}"})
+        }
+        function sendMsj() {
+            message = document.querySelector("#message")
+            if (message.value.trim() == "")
+                return alert("No hay mensaje que enviar")
+            socket.emit('chat', { message: message.value.trim(), room:"room{{current_user.id}}"})
+            message.value = ""
+        }
+        socket.on('connect', function () {
+            console.log("Conectados!")
+        })
+        socket.on('disconnect', function () {
+            console.log("Desconectados!")
+        })
+        socket.on('chat', function (message) {
+            console.log("chat "+message)
+        })
+        socket.on('leave', function (message) {
+            console.log("leave "+message)
+        })
+        socket.on('join', function (message) {
+            console.log("join "+message)
+        })
+    </script>
+    <h1>Hola Mundo</h1>
+</body>
+</html>
+Extra: Detect connections or disconnections
+In Flask Socket IO, we can easily detect when we connect to and disconnect from the socket server; for that:
+
+@socketio.on('connect')
+def connect():
+    print("Conectado!!!!!!!")
+@socketio.on('disconnect')
+def disconnect():
+
+Remember that this material is part of my complete course on Flask.
+
+
+Flask
+Python
+Andrés Cruz
+Desarrollo con Laravel, Django, Flask, CodeIgniter, HTML5, CSS3, MySQL, JavaScript, Vue, Android, iOS, Flutter
+Andrés Cruz en Udemy
+
+
+Buscar
+Buscar
+Email...
+Suscríbete
+Acepto recibir anuncios de interes sobre este Blog.
+
+
+Conozca nuestros cursos sobre Laravel, CodeIgniter, Flutter, Electron, Django, Flask y muchos más!
+
+VER LOS CURSOS
+¡HAZTE AFILIADO EN GUMROAD!
+!Cursos desde!
+
+4$
+
+En Academia
+
+VER LOS CURSOS
+
+!Libros desde!
+
+1$
+
+VER LOS LIBROS
+Github
+
+Aquí dejo algunos de mis juguetes...
+
+Facebook
+
+Sígueme en Facebook :).
+
+Twitter
+
+Sígueme en mi red social preferida para estar al día :)
+
+YouTube
+
+Ve mis últimos vídeos en...
+
+Discord
+
+¡Únete a nuestra comunidad!
+
+© 2023 Copyright | Contacto | Acerca de
+Su experiencia en este sitio será mejorada con el uso de cookies.
+Aceptar

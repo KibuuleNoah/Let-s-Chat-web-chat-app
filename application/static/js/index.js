@@ -74,7 +74,7 @@ const validateCreateForm = () => {
     flash(form["password1"],"too weak password, should have 2 digits min,3 lower letters(min) 1 upper letter and symbol(min)");
     return false
   }
-  else if (form["password1"].value != "booooo"){
+  else if (form["password1"].value != form["password2"].value){
     flash(form["password2"],"this password doesn't match the first one")
     return false;
   }
@@ -140,26 +140,63 @@ if (document.title == "create" || document.title == "login" || document.title ==
   }
 }
 
+if (document.title == "dashboard"){
+  alert("dashboard")
+  let chatSection = document.getElementById("one")
+  let chatDisplaySection = document.getElementById("chat-display");
+  var userId = 0 
+  var room = ""
 
-if (document.title == "one-on-one"){
+  let roomBtns = document.querySelectorAll(".room-btn");
+  for (let roomBtn of roomBtns){
+    roomBtn.addEventListener("click",()=>{
+      socketio.emit("join",{room : roomBtn.value })
+      chatSection.style.display = "block";
+      chatDisplaySection.style.display = "none";
+    })
+  }
+
+  // console.log(room)
+
   let msgContainerOne = document.getElementById("messages-one")
   let msgInputOne = document.getElementById("msginput-one");
   let sendBtnOne = document.getElementById("sendbtn-one")
-  sendBtnOne.addEventListener("click",()=>{
-    socketio.emit("message-one",msgInputOne.value);
-    msgInputOne.value = "";
-    document.getElementById("bottompage").scrollIntoView();
-  })
+  
+  // socketio.emit("user_join_one")
+  // socketio.on("send_ids",(id)=>{
+  //   userId = id;
+  //   alert(id);
+  //     
+  //   // userSid = idObj.sid; 
+  // })
+  socketio.on("send_ids",(idObj)=>{
+    userId = idObj.user_id 
+    room = idObj.room
+    alert(userId,room)
+  //})
+  
 
-  socketio.on("message-one",(msgObj)=>{
-    message = document.createElement("div");
-    message.setAttribute("class","card align-self-end mb-3 pb-0 ml-0");
-    message.innerHTML = `
-    <div class="card-body pb-0">
-      <p class="card-text mb-0 pb-0">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
-      <p class="card-text m-0 p-0" style="text-align: right;"><small class="text-body-secondary">12:00 am</small></p>
-    </div>
-    `;
-    msgContainerOne.appendChild(message);
+    sendBtnOne.addEventListener("click",()=>{
+      socketio.emit("message-one",{"message" : msgInputOne.value,"room" : room });
+      // console.log("room{{current_user.id}}")
+      msgInputOne.value = "";
+      document.getElementById("bottompage").scrollIntoView();
+    })
+    const giveMessageDirection = (id1,id2) => id1 === id2 ? "end" : "start"
+
+    socketio.on("message-one",(msgObj)=>{
+      message = document.createElement("div");
+      let direction = giveMessageDirection(msgObj.id,userId)
+      console.log(message)
+      message.setAttribute("class",`card align-self-${direction} mb-3 pb-0 ml-0`);
+      message.innerHTML = `
+      <div class="card-body pb-0">${msgObj.id} ${direction}
+        <p class="card-text mb-0 pb-0">${msgObj.message}</p>
+        <p class="card-text m-0 p-0" style="text-align: right;"><small class="text-body-secondary">${msgObj.time}</small></p>
+      </div>
+      `;
+      msgContainerOne.appendChild(message);
+      console.log("append the message")
+    })
   })
 }

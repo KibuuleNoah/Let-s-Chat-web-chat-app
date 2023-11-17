@@ -1,4 +1,6 @@
 from flask import render_template, request, url_for, Blueprint, flash
+from flask_login import current_user
+from flask_login import login_required
 import string
 
 views = Blueprint("views", __name__, template_folder="templates", url_prefix="/vws")
@@ -10,12 +12,15 @@ user = {
     "num_messages": 790,
 }
 
-# @views.route("/dashbord")
-# def dashbord():
-# return render_template("")
+
+@views.route("/dashboard")
+@login_required
+def dashboard():
+    return render_template("dashboard.html")
 
 
 @views.route("/profile", methods=["GET", "POST"])
+@login_required
 def profile():
     # if request.method == "POST":
     #     name = request.form["name"]
@@ -29,10 +34,13 @@ def profile():
 
 
 @views.route("/room")
+@login_required
 def room():
     return render_template("room.html")
 
 
 @views.route("/oneonone")
+@login_required
 def one_on_one():
+    print(f"\n{current_user}\n")
     return render_template("one_on_one.html")
