@@ -144,25 +144,24 @@ if (document.title == "create" || document.title == "login" || document.title ==
 
 if (document.title == "dashboard"){
   alert("dashboard")
-  fBtn = document.getElementById("f")
-  fBtn.addEventListener("click",()=>{
-    socketio.emit("user_join_one",fBtn.value)
-    // window.location.href = "/vws/oneonone"
-  //   socketio.on("send_ids",(idObj)=>{
-  // 
-  //     userId = idObj.user_id 
-  //     room = idObj.room
-  //     // console.log(userId,room) 
-  //   })
-    window.location.href = "/vws/oneonone"
-    // socketio.emit("user_join_one",{room:fBtn.value})
-  })
-  // var userId = 0 
-  // var room = null;
+  let roomBtns = document.querySelectorAll(".room-btn");
+  for (let roomBtn of roomBtns){
+    roomBtn.addEventListener("click",()=>{
+      socketio.emit("room",{room:roomBtn.value});
+      window.location.href = "/vws/oneonone"
+    })
+  }
+  // fBtn = document.getElementById("f")
+  // fBtn.addEventListener("click",()=>{
+  //   room = fBtn.value
+  //  window.location.href = "/vws/oneonone"
+  //})
   
 }
 
 if (document.title == "one-on-one"){
+  console.log(room)
+  // socketio.emit("join",{room : "roo)
   socketio.emit("reach","k");
   // var userId = null
   // var userSid = null
@@ -179,12 +178,13 @@ if (document.title == "one-on-one"){
   // })
   socketio.on("send_ids",(idObj)=>{
     userId = idObj.user_id 
-    room = idObj.room
+    //room = idObj.room
     // alert(userId,room)
   })
 
   sendBtnOne.addEventListener("click",()=>{
     socketio.emit("message-one",{"message" : msgInputOne.value,"room" : room });
+    // console.log("room{{current_user.id}}")
     msgInputOne.value = "";
     document.getElementById("bottompage").scrollIntoView();
   })
@@ -193,7 +193,7 @@ if (document.title == "one-on-one"){
   socketio.on("message-one",(msgObj)=>{
     message = document.createElement("div");
     let direction = giveMessageDirection(msgObj.id,userId)
-
+    console.log(message)
     message.setAttribute("class",`card align-self-${direction} mb-3 pb-0 ml-0`);
     message.innerHTML = `
     <div class="card-body pb-0">${msgObj.id} ${direction}
@@ -202,5 +202,6 @@ if (document.title == "one-on-one"){
     </div>
     `;
     msgContainerOne.appendChild(message);
+    console.log("append the message")
   })
 }

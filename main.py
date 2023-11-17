@@ -6,7 +6,7 @@ from time import strftime
 import time
 
 # from application.Auth.auth import models
-room = ""
+room_ = ""
 
 
 app = create_app()
@@ -18,15 +18,20 @@ def connection():
     print("connected")
 
 
-@socketio.on("user_join_one")
+@socketio.on("room")
+def room(rm):
+
+
+
+@socketio.on("join")
 def handle_join_one(roomObj):
     # id = current_user.id
-    sid = request.sid
+    # sid = request.sid
     # print(id)
-    global room
-    room = roomObj
-    join_room(room, sid)
-    print(sid, "joined -> ", room)
+    # global room
+    # room = roomObj
+    join_room(roomObj["room"])
+    # print(sid, "joined -> ", room)
     # time.sleep(5)
     # print("\nEMITTing\n")
     # emit("send_ids", {"user_id": id, "user_sid": sid, "room": room})
@@ -36,18 +41,19 @@ def handle_join_one(roomObj):
 
 @socketio.on("reach")
 def reach(k):
-    print("***********", room)
-    emit("send_ids", {"user_id": current_user.id, "room": room})
+    # print("***********", room)
+    emit("send_ids", {"user_id": current_user.id, "room": room_})
 
 
 @socketio.on("message-one")
 def handle_messsage_one(msgObj):
     # print(msgObj["message"])
     print(msgObj)
+    # print(f"\n rooms {socketio.server.rooms['/vws/oneonone'].keys()}\n")
     current_time = strftime("%I:%M:%S %p")
     d = {"message": msgObj["message"], "id": current_user.id, "time": current_time}
-    emit("message-one", d, broadcast=True, room="room1")
+    emit("message-one", d, broadcast=True, room=msgObj["room"])
 
 
 if __name__ == "__main__":
-    socketio.run(app)
+    socketio.run(app, debug=True)

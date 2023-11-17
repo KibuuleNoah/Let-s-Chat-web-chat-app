@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Chat App</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.1.1/socket.io.js" integrity="sha512-xyF+Rq2ikcDlkJjJZ+uxH/c2PTXM20K1G5Ic5DZ1vfXtiHz3WVQFvqg/Zii/N55d2c1TwTm1cOjW4ZepXZI/Cw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+</head>
+<body>
+  <h1>Simple Chat App</h1>
+
+  <div>
+      <button onclick="joinRoom('room1')">Join Room 1</button>
+      <button onclick="leaveRoom('room1')">Leave Room 1</button>
+      <div id="room1_messages"></div>
+      <input type="text" placeholder="Your message..." onkeydown="if (event.key === 'Up') sendMessage('room1', 'User 1', this.value)">
+  </div>
+
+  <div>
+      <button onclick="joinRoom('room2')">Join Room 2</button>
+      <button onclick="leaveRoom('room2')">Leave Room 2</button>
+      <div id="room2_messages"></div>
+      <input type="text" placeholder="Your message..." onkeydown="if (event.key === 'Enter') sendMessage('room2', 'User 2', this.value)">
+  </div>
+
+  <div>
+      <button onclick="joinRoom('room3')">Join Room 3</button>
+      <button onclick="leaveRoom('room3')">Leave Room 3</button>
+      <div id="room3_messages"></div>
+      <input type="text" placeholder="Your message..." onkeydown="if (event.key === 'Enter') sendMessage('room3', 'User 3', this.value)">
+  </div>
+  <script>
+      var socket = io.connect('http://' + document.domain + ':' + location.port);
+
+      function joinRoom(room) {
+          alert(room);
+          socket.emit('join', {'room': room});
+      }
+
+      function leaveRoom(room) {
+          socket.emit('leave', {'room': room});
+      }
+
+      function sendMessage(room, user, message) {
+          socket.emit('send_message', {'room': room, 'user': user, 'message': message});
+      }
+
+      socket.on('message', function(data) {
+          var messages = document.getElementById(data.room + '_messages');
+          var messageElement = document.createElement('p');
+          messageElement.innerHTML = '<strong>' + data.user + ':</strong> ' + data.text;
+          messages.appendChild(messageElement);
+      });
+  </script>
+
+</body>
+</html>
+
