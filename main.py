@@ -29,9 +29,7 @@ def handle_join_one(roomObj):
 
 @socketio.on("message-one")
 def handle_messsage_one(msgObj):
-    # print(msgObj["message"])
     print(msgObj)
-    # print(f"\n rooms {socketio.server.rooms['/vws/oneonone'].keys()}\n")
     current_time = strftime("%I:%M:%S %p")
     d = {"message": msgObj["message"], "id": current_user.id, "time": current_time}
     emit("message-one", d, broadcast=True, room=msgObj["room"])

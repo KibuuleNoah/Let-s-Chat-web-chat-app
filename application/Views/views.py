@@ -16,7 +16,7 @@ user = {
 @views.route("/dashboard")
 @login_required
 def dashboard():
-    return render_template("dashboard.html")
+    return render_template("dashboard.html", user_name=current_user.name)
 
 
 @views.route("/profile", methods=["GET", "POST"])
@@ -39,8 +39,8 @@ def room():
     return render_template("room.html")
 
 
-@views.route("/oneonone")
-@login_required
-def one_on_one():
-    print(f"\n{current_user}\n")
-    return render_template("one_on_one.html")
+# @views.route("/oneonone")
+# @login_required
+# def one_on_one():
+# print(f"\n{current_user}\n")
+# return render_template("one_on_one.html", user_name=current_user.name)
