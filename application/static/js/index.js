@@ -1,6 +1,4 @@
 let messageInput = document.getElementById("message-input");
-var userId = 0 
-var room = ""
 
 const socketio = io({autoConnect:false});
 socketio.connect()
@@ -144,27 +142,22 @@ if (document.title == "create" || document.title == "login" || document.title ==
 
 if (document.title == "dashboard"){
   alert("dashboard")
+  let chatSection = document.getElementById("one")
+  let chatDisplaySection = document.getElementById("chat-display");
+  var userId = 0 
+  var room = ""
+
   let roomBtns = document.querySelectorAll(".room-btn");
   for (let roomBtn of roomBtns){
     roomBtn.addEventListener("click",()=>{
-      socketio.emit("room",{room:roomBtn.value});
-      window.location.href = "/vws/oneonone"
+      socketio.emit("join",{room : roomBtn.value })
+      chatSection.style.display = "block";
+      chatDisplaySection.style.display = "none";
     })
   }
-  // fBtn = document.getElementById("f")
-  // fBtn.addEventListener("click",()=>{
-  //   room = fBtn.value
-  //  window.location.href = "/vws/oneonone"
-  //})
-  
-}
 
-if (document.title == "one-on-one"){
-  console.log(room)
-  // socketio.emit("join",{room : "roo)
-  socketio.emit("reach","k");
-  // var userId = null
-  // var userSid = null
+  // console.log(room)
+
   let msgContainerOne = document.getElementById("messages-one")
   let msgInputOne = document.getElementById("msginput-one");
   let sendBtnOne = document.getElementById("sendbtn-one")
@@ -178,30 +171,32 @@ if (document.title == "one-on-one"){
   // })
   socketio.on("send_ids",(idObj)=>{
     userId = idObj.user_id 
-    //room = idObj.room
-    // alert(userId,room)
-  })
+    room = idObj.room
+    alert(userId,room)
+  //})
+  
 
-  sendBtnOne.addEventListener("click",()=>{
-    socketio.emit("message-one",{"message" : msgInputOne.value,"room" : room });
-    // console.log("room{{current_user.id}}")
-    msgInputOne.value = "";
-    document.getElementById("bottompage").scrollIntoView();
-  })
-  const giveMessageDirection = (id1,id2) => id1 === id2 ? "end" : "start"
+    sendBtnOne.addEventListener("click",()=>{
+      socketio.emit("message-one",{"message" : msgInputOne.value,"room" : room });
+      // console.log("room{{current_user.id}}")
+      msgInputOne.value = "";
+      document.getElementById("bottompage").scrollIntoView();
+    })
+    const giveMessageDirection = (id1,id2) => id1 === id2 ? "end" : "start"
 
-  socketio.on("message-one",(msgObj)=>{
-    message = document.createElement("div");
-    let direction = giveMessageDirection(msgObj.id,userId)
-    console.log(message)
-    message.setAttribute("class",`card align-self-${direction} mb-3 pb-0 ml-0`);
-    message.innerHTML = `
-    <div class="card-body pb-0">${msgObj.id} ${direction}
-      <p class="card-text mb-0 pb-0">${msgObj.message}</p>
-      <p class="card-text m-0 p-0" style="text-align: right;"><small class="text-body-secondary">${msgObj.time}</small></p>
-    </div>
-    `;
-    msgContainerOne.appendChild(message);
-    console.log("append the message")
+    socketio.on("message-one",(msgObj)=>{
+      message = document.createElement("div");
+      let direction = giveMessageDirection(msgObj.id,userId)
+      console.log(message)
+      message.setAttribute("class",`card align-self-${direction} mb-3 pb-0 ml-0`);
+      message.innerHTML = `
+      <div class="card-body pb-0">${msgObj.id} ${direction}
+        <p class="card-text mb-0 pb-0">${msgObj.message}</p>
+        <p class="card-text m-0 p-0" style="text-align: right;"><small class="text-body-secondary">${msgObj.time}</small></p>
+      </div>
+      `;
+      msgContainerOne.appendChild(message);
+      console.log("append the message")
+    })
   })
 }

@@ -18,31 +18,13 @@ def connection():
     print("connected")
 
 
-@socketio.on("room")
-def room(rm):
-
-
-
 @socketio.on("join")
 def handle_join_one(roomObj):
     # id = current_user.id
-    # sid = request.sid
-    # print(id)
-    # global room
-    # room = roomObj
+    sid = request.sid
     join_room(roomObj["room"])
-    # print(sid, "joined -> ", room)
-    # time.sleep(5)
-    # print("\nEMITTing\n")
-    # emit("send_ids", {"user_id": id, "user_sid": sid, "room": room})
-    # print(f"\n EMITTED \n")
-    # emit("one_on_one", {"users_id": id, "user_sid": sid, "room": room["room"]})
-
-
-@socketio.on("reach")
-def reach(k):
-    # print("***********", room)
-    emit("send_ids", {"user_id": current_user.id, "room": room_})
+    print(sid, "joined -> ", roomObj["room"])
+    emit("send_ids", {"user_id": current_user.id, "room": roomObj["room"]})
 
 
 @socketio.on("message-one")

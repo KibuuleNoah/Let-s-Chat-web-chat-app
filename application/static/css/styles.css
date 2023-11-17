@@ -77,3 +77,7 @@ html{
   /* color: #00000062; */
   color: rgba(0, 0, 0, 89);
 }
+
+#one{
+  display: none;
+}
