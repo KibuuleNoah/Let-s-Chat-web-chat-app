@@ -1,0 +1,24 @@
+{% macro your_room() %}
+<div class="card d-flex pt-0 pb-0 room-card"> 
+   <img style="height:3rem;width:3rem;" class="h-img align-self-center pb-0 mb-0" src="{{url_for('static',filename='imgs/image.jpg')}}" class="card-img-top" alt="..."> 
+   <div class="card-body d-flex flex-column mt-0 pt-0"> 
+     <p class="card-title sm-card-title align-self-center">room title</p> 
+     <p class="card-text">moto: pragramming rules</p> 
+     <button class="btn btn-primary align-self-center sm-btn pb-0 pt-0 mb-0 mt-0 enter" value="test">Enter</button> 
+   </div> 
+ </div> 
+{% endmacro %}
+
+{% macro other_room() %}
+<div class="card d-flex flex-row pt-0 pb-0 room-card room-cust"> 
+ <img style="height:7rem;width:7rem;" class="align-self-center pb-0 mb-0" src="{{url_for('static',filename='imgs/image.jpg')}}" class="card-img-top" alt="..."> 
+
+ <div class="card-body align-self-center d-flex flex-column mt-0 pt-0"> 
+   <p class="card-title sm-card-title align-self-center">room title</p> 
+   <p class="card-text align-self-center">moto: pragramming rules</p> 
+ </div> 
+
+ <button class="btn btn-primary align-self-center sm-btn pb-0 pt-0 mb-0 mt-0 join" value="test">Join</button> 
+</div> 
+
+{% endmacro %}

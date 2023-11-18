@@ -140,63 +140,131 @@ if (document.title == "create" || document.title == "login" || document.title ==
   }
 }
 
-if (document.title == "dashboard"){
-  alert("dashboard")
-  let chatSection = document.getElementById("one")
-  let chatDisplaySection = document.getElementById("chat-display");
-  var userId = 0 
-  var room = ""
-
-  let roomBtns = document.querySelectorAll(".room-btn");
+const EnterChatRoom = (chatsSection,chatRoomSection)=>{
+  let roomBtns = document.getElementsByClassName("enter");
   for (let roomBtn of roomBtns){
     roomBtn.addEventListener("click",()=>{
-      socketio.emit("join",{room : roomBtn.value })
-      chatSection.style.display = "block";
-      chatDisplaySection.style.display = "none";
+      // socketio.emit("join",{room : roomBtn.value })
+      chatsSection.style.display = "none";
+      chatRoomSection.style.display = "block";
     })
   }
+}
 
-  // console.log(room)
+const sendMessage = (msgInput,room) =>{
+ socketio.emit("message-one",{message : msgInput.value,room : room });
+  msgInput.value = "";
 
-  let msgContainerOne = document.getElementById("messages-one")
-  let msgInputOne = document.getElementById("msginput-one");
-  let sendBtnOne = document.getElementById("sendbtn-one")
+}
+
+const displayMessage = (messageDiv,msgContainer,message,time,direction)=>{
+  if (direction == "right"){
+    messageDiv.setAttribute("class",`card align-self-end mb-3 pb-0 ml-0`);
+    messageDiv.innerHTML = `
+    <div class="card-body pb-0">
+      <p class="card-text mb-0 pb-0">${message}</p>
+      <p class="card-text m-0 p-0" style="text-align: right;"><small class="text-body-secondary">${time}</small></p>
+    </div>
+    `;
+    msgContainer.appendChild(messageDiv);
+    console.log("append the message");
+  }
+  else{
+    messageDiv.setAttribute("class","card mb-3 pb-0 ml-0");
+    messageDiv.innerHTML = `
+    <div class="card-header d-flex">
+      <img src="..." class="card-img-top align-self-start" alt="...">
+      <span class="align-self-end">kibuule_noah</span>
+    </div>
+    <div class="card-body pb-0">
+      <p class="card-text mb-0 pb-0">${message}</p>
+      <p class="card-text m-0 p-0" style="text-align: right;"><small class="text-body-secondary">${time}</small></p>
+
+    </div>
+    `;
+    msgContainer.appendChild(messageDiv);
+    console.log("append the message");
+
+  }
+}
+
+const yourRoom = (name,moto,photo=null)=>{
+  return `
+    <img style="height:3rem;width:3rem;" class="h-img align-self-center pb-0 mb-0" src="{{url_for('static',filename='imgs/image.jpg')}}" class="card-img-top" alt="..."> 
+    <div class="card-body d-flex flex-column mt-0 pt-0"> 
+      <p class="card-title sm-card-title align-self-center">${name}<sup style="color:green;">*new</sup></p> 
+      <p class="card-text">moto: ${moto}</p> 
+      <button class="btn btn-primary align-self-center sm-btn pb-0 pt-0 mb-0 mt-0">Enter</button> 
+   </div> `
+}
+
+
+const createYourRoomCard = (roomName,roomMoto)=>{
+  let yourRoomsSection = document.getElementById("your-rooms");
+  let test = document.createElement("div");
+  test.setAttribute("class","card d-flex pt-0 pb-0 room-card")
+  test.style.border = "1px solid green"
+  test.innerHTML = yourRoom(roomName,roomMoto);
+  yourRoomsSection.appendChild(test);
+
+};
+
+if (document.title == "dashboard"){
+  let chatsSection = document.getElementById("chats-display");
+  let chatRoomSection = document.getElementById("chat-room");
+
+  let createRoomBtn = document.getElementById("create-btn");
+  let createRoomToastElement = document.getElementById("create-room-toast");
+
+
+  let createRoomToast = new bootstrap.Toast(createRoomToastElement);
+  createRoomBtn.addEventListener("click",()=>createRoomToast.show());
+
+  var userId = 0 
+  var room = ""  
   
-  // socketio.emit("user_join_one")
-  // socketio.on("send_ids",(id)=>{
-  //   userId = id;
-  //   alert(id);
-  //     
-  //   // userSid = idObj.sid; 
-  // })
+  document.getElementById("create-room-btn").addEventListener("click",()=>{
+    let form = document.forms["create-room-form"];
+    console.log(form)
+
+    let roomName = form["room-name"].value//.value)
+    let roomMoto = form["room-moto"].value
+    let roomImage = form["room-image"].value
+
+    if (roomName && roomMoto){ 
+      createYourRoomCard(roomName,roomMoto);
+      createRoomToast.hide()
+    }
+  })
+  
+  EnterChatRoom(chatsSection,chatRoomSection);  
+
+
+  let msgContainer = document.getElementById("messages")
+  let msgInput = document.getElementById("message-input");
+  let sendBtn = document.getElementById("send-btn")
+  
   socketio.on("send_ids",(idObj)=>{
     userId = idObj.user_id 
     room = idObj.room
-    alert(userId,room)
-  //})
+    // alert(userId,room)
   
 
-    sendBtnOne.addEventListener("click",()=>{
-      socketio.emit("message-one",{"message" : msgInputOne.value,"room" : room });
-      // console.log("room{{current_user.id}}")
-      msgInputOne.value = "";
+    sendBtn.addEventListener("click",()=>{
+      sendMessage(msgInput,room);
+      
       document.getElementById("bottompage").scrollIntoView();
     })
-    const giveMessageDirection = (id1,id2) => id1 === id2 ? "end" : "start"
+    const giveMessageDirection = (id1,id2) => id1 === id2 ? "right" : "left"
 
     socketio.on("message-one",(msgObj)=>{
-      message = document.createElement("div");
-      let direction = giveMessageDirection(msgObj.id,userId)
-      console.log(message)
-      message.setAttribute("class",`card align-self-${direction} mb-3 pb-0 ml-0`);
-      message.innerHTML = `
-      <div class="card-body pb-0">${msgObj.id} ${direction}
-        <p class="card-text mb-0 pb-0">${msgObj.message}</p>
-        <p class="card-text m-0 p-0" style="text-align: right;"><small class="text-body-secondary">${msgObj.time}</small></p>
-      </div>
-      `;
-      msgContainerOne.appendChild(message);
-      console.log("append the message")
+      let messageDiv = document.createElement("div");
+      let message = msgObj.message;
+      let time = msgObj.time;
+      let direction = giveMessageDirection(msgObj.id,userId);
+
+      displayMessage(messageDiv,msgContainer,message,time,direction);
+       
     })
   })
 }
