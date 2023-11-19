@@ -32,10 +32,6 @@ class Room(db.Model):
     room_name = db.Column(db.String(15), nullable=False, unique=True)
     room_moto = db.Column(db.String, nullable=False)
     creater_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
-    :q
-    :q
-
-
     # image = db.Column(db.LargeBinary, nullable=False, default="default2.jpg")
     create_date_time = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     num_clients = db.Column(db.Integer, nullable=False, default=0)
