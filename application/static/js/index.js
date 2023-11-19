@@ -112,9 +112,6 @@ const validateChangeNameForm = ()=>{
     flash(userName," name can't start with a digit")
     return false
   }
-  // else{
-    // return true;
-  // }
 }
 
 const validateChangePasswordForm = ()=>{
@@ -144,7 +141,7 @@ const EnterChatRoom = (chatsSection,chatRoomSection)=>{
   let roomBtns = document.getElementsByClassName("enter");
   for (let roomBtn of roomBtns){
     roomBtn.addEventListener("click",()=>{
-      // socketio.emit("join",{room : roomBtn.value })
+      socketio.emit("join",{room : roomBtn.value })
       chatsSection.style.display = "none";
       chatRoomSection.style.display = "block";
     })
@@ -194,7 +191,7 @@ const yourRoom = (name,moto,photo=null)=>{
     <div class="card-body d-flex flex-column mt-0 pt-0"> 
       <p class="card-title sm-card-title align-self-center">${name}<sup style="color:green;">*new</sup></p> 
       <p class="card-text">moto: ${moto}</p> 
-      <button class="btn btn-primary align-self-center sm-btn pb-0 pt-0 mb-0 mt-0">Enter</button> 
+      <button class="btn btn-primary align-self-center sm-btn pb-0 pt-0 mb-0 mt-0 enter" value=${name}>Enter</button> 
    </div> `
 }
 
@@ -208,6 +205,13 @@ const createYourRoomCard = (roomName,roomMoto)=>{
   yourRoomsSection.appendChild(test);
 
 };
+
+const clearForm = (form)=>{
+  form["room-name"].value = "";
+  form["room-moto"].value = "";
+  form["room-image"].value = "";
+
+}
 
 if (document.title == "dashboard"){
   let chatsSection = document.getElementById("chats-display");
@@ -225,20 +229,28 @@ if (document.title == "dashboard"){
   
   document.getElementById("create-room-btn").addEventListener("click",()=>{
     let form = document.forms["create-room-form"];
-    console.log(form)
 
     let roomName = form["room-name"].value//.value)
     let roomMoto = form["room-moto"].value
     let roomImage = form["room-image"].value
-
-    if (roomName && roomMoto){ 
-      createYourRoomCard(roomName,roomMoto);
-      createRoomToast.hide()
+    if (roomName && roomMoto){
+      socketio.emit("create_room",{name:roomName,moto: roomMoto,image:roomImage});
+      socketio.on("confirm_room_exists",(res)=>{
+        console.log(res)
+        console.log(typeof res)
+        if (!res){
+          createYourRoomCard(roomName,roomMoto);
+          clearForm(form);
+          createRoomToast.hide();
+        }
+        else{
+          clearForm(form);
+        }
+      })
     }
   })
   
   EnterChatRoom(chatsSection,chatRoomSection);  
-
 
   let msgContainer = document.getElementById("messages")
   let msgInput = document.getElementById("message-input");
@@ -247,8 +259,6 @@ if (document.title == "dashboard"){
   socketio.on("send_ids",(idObj)=>{
     userId = idObj.user_id 
     room = idObj.room
-    // alert(userId,room)
-  
 
     sendBtn.addEventListener("click",()=>{
       sendMessage(msgInput,room);
