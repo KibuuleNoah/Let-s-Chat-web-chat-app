@@ -8,10 +8,16 @@
 </nav>
 <div class="mt-2 profile">
   <div class="photo">
-    <div class="d-flex justify-content-center">  
-      <img class="img-fluid" src="{{url_for('static',filename=user['photo'])}}" style="border: 3px solid green;border-radius: 50%;" alt="" width="200" height="200">
+    <div class="d-flex justify-content-center">
+      <form id="upload-prof-img" method="POST">
+        <label for="img-input">
+          <img id="prof-img" class="img-fluid" src="{{url_for('static',filename=user['photo'])}}" style="border: 3px solid green;border-radius: 50%;" alt="" width="200" height="200">
+          <input type="file" accept="image/*" name="img-input" id="img-input" style="display:none;">
+        </label>
+      </form>
     </div>
   </div>
+  
   <div class="name">Name: </div>
   <div class="text-info Name">{{user["name"]}}</div>
   <div class="Freinds">Freinds: </div>
@@ -79,4 +85,47 @@
     </div>
   </div>
 </div>
-{% endblock %}  
+{% endblock %} 
+
+
+<!-- <!DOCTYPE html> -->
+<!-- <html lang="en"> -->
+<!-- <head> -->
+<!--   <meta charset="UTF-8"> -->
+<!--   <meta name="viewport" content="width=device-width, initial-scale=1.0"> -->
+<!--   <title>Image Upload with Preview</title> -->
+<!-- </head> -->
+<!-- <body> -->
+<!---->
+<!-- <form action="/upload" method="post" enctype="multipart/form-data" id="uploadForm"> -->
+<!--   <input type="file" accept="image/*" id="imageInput" onchange="handleImage()"> -->
+<!-- </form> -->
+<!---->
+<!-- <div id="imagePreviewContainer"> -->
+<!--   <img id="imagePreview" alt="Image Preview"> -->
+<!-- </div> -->
+<!---->
+<!-- <script> -->
+<!-- function handleImage() { -->
+<!--   const input = document.getElementById('imageInput'); -->
+<!--   const preview = document.getElementById('imagePreview'); -->
+<!--   const form = document.getElementById('uploadForm'); -->
+<!---->
+<!--   if (input.files && input.files[0]) { -->
+<!--     const reader = new FileReader(); -->
+<!---->
+<!--     reader.onload = function (e) { -->
+<!--       preview.src = e.target.result; -->
+<!--     }; -->
+<!---->
+<!--     reader.readAsDataURL(input.files[0]); -->
+<!---->
+<!--     // Submit the form programmatically after selecting the image -->
+<!--     form.submit(); -->
+<!--   } -->
+<!-- } -->
+<!-- </script> -->
+<!---->
+<!-- </body> -->
+<!-- </html> -->
+<!--    -->

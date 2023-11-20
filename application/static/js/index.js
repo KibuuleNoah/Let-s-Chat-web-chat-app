@@ -2,7 +2,6 @@ const messageInput = document.getElementById("message-input");
 const socketio = io({autoConnect:false});
 socketio.connect()
 
-var load_msgs = false
 
 const startsWithdigit = (str)=>/^[0-9].+/.test(str);
 const validatePasswordFormat = (pwd)=>/^(?=(.*\d){2,})(?=(.*[a-z]){3,})(?=(.*[A-Z]){1,})(?=(.*\W){1,}).{6,12}$/.test(pwd);
@@ -27,6 +26,27 @@ if (document.title == "profile"){
       nameToast.hide();
     });
   });
+  const handleImage = () => {
+    const input = document.getElementById('img-input');
+    const preview = document.getElementById('prof-img');
+    const form = document.getElementById('upload-prof-img');
+
+    if (input.files && input.files[0]) {
+      const reader = new FileReader();
+
+      reader.onload = function (e) {
+        preview.src = e.target.result;
+      };
+
+      reader.readAsDataURL(input.files[0]);
+
+      // Submit the form programmatically after selecting the image
+      form.submit();
+    }
+  }
+  document.getElementById("img-input").addEventListener("onchange",()=>{
+    handleImage()
+  })
 }
 
 if (document.title == "room"){
@@ -157,7 +177,7 @@ const ExitChatRoom = (chatsSection,chatRoomSection)=>{
   document.getElementById("exit-room").addEventListener("click",()=>{
     chatsSection.style.display = "block";
     chatRoomSection.style.display = "none";
-        
+    // document.getElementById("messages").innerHTML = " ";
   })
 }
 
@@ -230,6 +250,17 @@ const clearForm = (form)=>{
 if (document.title == "dashboard"){
   let chatsSection = document.getElementById("chats-display");
   let chatRoomSection = document.getElementById("chat-room");
+  
+  // const EnterChatRoom = (value,chatsSection=chatsSection,chatRoomSection=chatRoomSection)=>{
+  //     socketio.emit("join",{room : roomBtn.value})
+  //     document.getElementById("room-title").innerText = value
+  //     socketio.on("get_room_messages",(roomMsgs)=>{
+  //       chatsSection.style.display = "none";
+  //       chatRoomSection.style.display = "block";
+  //       console.log(roomMsgs)
+  //     })
+  //   }
+  // }
 
   let createRoomBtn = document.getElementById("create-btn");
   let createRoomToastElement = document.getElementById("create-room-toast");
@@ -292,17 +323,14 @@ if (document.title == "dashboard"){
       
     })
     socketio.on("get_room_messages",(roomMsgs)=>{
-      if (!load_msgs){ 
-        for (let msgobj of roomMsgs){
-          let messageDiv2 = document.createElement("div");
-          let sender_id = msgobj[0];
-          let msg = msgobj[1];
-          let time = "coming";
-          let direction = giveMessageDirection(sender_id,userId);
+      for (let msgobj of roomMsgs){
+        let messageDiv2 = document.createElement("div");
+        let sender_id = msgobj[0];
+        let msg = msgobj[1];
+        let time = "coming";
+        let direction = giveMessageDirection(sender_id,userId);
 
-          displayMessage(messageDiv2,msgContainer,msg,time,direction);
-          load_msgs = true;
-        }
+        displayMessage(messageDiv2,msgContainer,msg,time,direction);
       }
     })
   })

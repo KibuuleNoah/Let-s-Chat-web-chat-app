@@ -7,7 +7,7 @@ from time import strftime
 import time
 
 # from application.Auth.auth import models
-
+joined_users = set()
 
 app = create_app()
 socketio = SocketIO(app)
@@ -22,7 +22,7 @@ def connection():
 def handle_join_one(roomObj):
     room = Room.query.filter_by(room_name=roomObj["room"]).first()
     room_msgs = room.messages
-    print([[msgobj.sender_id, msgobj.message] for msgobj in room_msgs])
+    print([[msgobj.sender_id, msgobj.message, msgobj.id] for msgobj in room_msgs])
     sid = request.sid
     join_room(roomObj["room"])
     print(sid, "joined -> ", roomObj["room"])
