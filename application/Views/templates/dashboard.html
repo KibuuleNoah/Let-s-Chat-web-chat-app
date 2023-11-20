@@ -50,23 +50,26 @@
      </div> 
    </div> 
    <section id="your-rooms">
-     <h2 style="margin-top:60px">Your Room</h2> 
-     {{your_room()}}
-     {{your_room()}}
+     <h2 style="margin-top:60px">Your Room</h2>
+     {% if your_rooms %}
+     {% for room in your_rooms %}
+      {{your_room(room)}}
+     {% endfor %} 
+     {% else %}
+       <h1 align="center">No rooms yet</h1>
+     {% endif %}
   </section>
   <section id="other-rooms">
-     <h2>Other Available Rooms</h2> 
-     <div class="card d-flex flex-row pt-0 pb-0 room-card room-cust"> 
-       <img style="height:7rem;width:7rem;" class="align-self-center pb-0 mb-0" src="{{url_for('static',filename='imgs/image.jpg')}}" class="card-img-top" alt="..."> 
-       <div class="card-body align-self-center d-flex flex-column mt-0 pt-0"> 
-         <p class="card-title sm-card-title align-self-center">room title</p> 
-         <p class="card-text align-self-center">moto: pragramming rules</p> 
-       </div> 
-       <button class="btn btn-primary align-self-center sm-btn pb-0 pt-0 mb-0 mt-0">Join</button> 
-     </div>  
-     {{other_room()}}
-     {{other_room()}}
-  </section>    
+     <h2>Other Available Rooms</h2>  
+     {% if other_rooms %}
+     {% for room in other_rooms %}
+      {{other_room(room)}}
+     {% endfor %} 
+     {% else %}
+       <h1 align="center">No rooms yet</h1>
+     {% endif %}
+  </section> 
+
 </section>    
 {{room()}}
 {% endblock %}
