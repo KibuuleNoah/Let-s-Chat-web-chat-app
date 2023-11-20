@@ -148,8 +148,8 @@ const EnterChatRoom = (chatsSection,chatRoomSection)=>{
   }
 }
 
-const sendMessage = (msgInput,room) =>{
- socketio.emit("message-one",{message : msgInput.value,room : room });
+const sendMessage = (msgInput,room,sender_id) =>{
+ socketio.emit("message",{message : msgInput.value,room : room ,sender_id: sender_id});
   msgInput.value = "";
 
 }
@@ -261,13 +261,13 @@ if (document.title == "dashboard"){
     room = idObj.room
 
     sendBtn.addEventListener("click",()=>{
-      sendMessage(msgInput,room);
+      sendMessage(msgInput,room,userId);
       
       document.getElementById("bottompage").scrollIntoView();
     })
     const giveMessageDirection = (id1,id2) => id1 === id2 ? "right" : "left"
 
-    socketio.on("message-one",(msgObj)=>{
+    socketio.on("message",(msgObj)=>{
       let messageDiv = document.createElement("div");
       let message = msgObj.message;
       let time = msgObj.time;
