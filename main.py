@@ -20,11 +20,17 @@ def connection():
 
 @socketio.on("join")
 def handle_join_one(roomObj):
-    # id = current_user.id
+    room = Room.query.filter_by(room_name=roomObj["room"]).first()
+    room_msgs = room.messages
+    print([[msgobj.sender_id, msgobj.message] for msgobj in room_msgs])
     sid = request.sid
     join_room(roomObj["room"])
     print(sid, "joined -> ", roomObj["room"])
     emit("send_ids", {"user_id": current_user.id, "room": roomObj["room"]})
+    emit(
+        "get_room_messages",
+        [[msgobj.sender_id, msgobj.message] for msgobj in room_msgs],
+    )
 
 
 def save_message(msg, sender_id, room):

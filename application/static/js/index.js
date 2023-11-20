@@ -1,7 +1,8 @@
-let messageInput = document.getElementById("message-input");
-
+const messageInput = document.getElementById("message-input");
 const socketio = io({autoConnect:false});
 socketio.connect()
+
+var load_msgs = false
 
 const startsWithdigit = (str)=>/^[0-9].+/.test(str);
 const validatePasswordFormat = (pwd)=>/^(?=(.*\d){2,})(?=(.*[a-z]){3,})(?=(.*[A-Z]){1,})(?=(.*\W){1,}).{6,12}$/.test(pwd);
@@ -141,11 +142,23 @@ const EnterChatRoom = (chatsSection,chatRoomSection)=>{
   let roomBtns = document.getElementsByClassName("enter");
   for (let roomBtn of roomBtns){
     roomBtn.addEventListener("click",()=>{
-      socketio.emit("join",{room : roomBtn.value })
-      chatsSection.style.display = "none";
-      chatRoomSection.style.display = "block";
+      socketio.emit("join",{room : roomBtn.value})
+      document.getElementById("room-title").innerText = roomBtn.value
+      socketio.on("get_room_messages",(roomMsgs)=>{
+        chatsSection.style.display = "none";
+        chatRoomSection.style.display = "block";
+        console.log(roomMsgs)
+      })
     })
   }
+}
+
+const ExitChatRoom = (chatsSection,chatRoomSection)=>{
+  document.getElementById("exit-room").addEventListener("click",()=>{
+    chatsSection.style.display = "block";
+    chatRoomSection.style.display = "none";
+        
+  })
 }
 
 const sendMessage = (msgInput,room,sender_id) =>{
@@ -155,33 +168,34 @@ const sendMessage = (msgInput,room,sender_id) =>{
 }
 
 const displayMessage = (messageDiv,msgContainer,message,time,direction)=>{
-  if (direction == "right"){
-    messageDiv.setAttribute("class",`card align-self-end mb-3 pb-0 ml-0`);
-    messageDiv.innerHTML = `
-    <div class="card-body pb-0">
-      <p class="card-text mb-0 pb-0">${message}</p>
-      <p class="card-text m-0 p-0" style="text-align: right;"><small class="text-body-secondary">${time}</small></p>
-    </div>
-    `;
-    msgContainer.appendChild(messageDiv);
-    console.log("append the message");
-  }
-  else{
-    messageDiv.setAttribute("class","card mb-3 pb-0 ml-0");
-    messageDiv.innerHTML = `
-    <div class="card-header d-flex">
-      <img src="..." class="card-img-top align-self-start" alt="...">
-      <span class="align-self-end">kibuule_noah</span>
-    </div>
-    <div class="card-body pb-0">
-      <p class="card-text mb-0 pb-0">${message}</p>
-      <p class="card-text m-0 p-0" style="text-align: right;"><small class="text-body-secondary">${time}</small></p>
+  if (message){
+    if (direction == "right"){
+      messageDiv.setAttribute("class",`card align-self-end mb-3 pb-0 ml-0`);
+      messageDiv.innerHTML = `
+      <div class="card-body pb-0">
+        <p class="card-text mb-0 pb-0">${message}</p>
+        <p class="card-text m-0 p-0" style="text-align: right;"><small class="text-body-secondary">${time}</small></p>
+      </div>
+      `;
+      msgContainer.appendChild(messageDiv);
+      console.log("append the message");
+    }
+    else{
+      messageDiv.setAttribute("class","card mb-3 pb-0 ml-0");
+      messageDiv.innerHTML = `
+      <div class="card-header d-flex">
+        <img src="..." class="card-img-top align-self-start" alt="...">
+        <span class="align-self-end">kibuule_noah</span>
+      </div>
+      <div class="card-body pb-0">
+        <p class="card-text mb-0 pb-0">${message}</p>
+        <p class="card-text m-0 p-0" style="text-align: right;"><small class="text-body-secondary">${time}</small></p>
 
-    </div>
-    `;
-    msgContainer.appendChild(messageDiv);
-    console.log("append the message");
-
+      </div>
+      `;
+      msgContainer.appendChild(messageDiv);
+      console.log("append the message");
+    }
   }
 }
 
@@ -251,6 +265,7 @@ if (document.title == "dashboard"){
   })
   
   EnterChatRoom(chatsSection,chatRoomSection);  
+  ExitChatRoom(chatsSection,chatRoomSection);  
 
   let msgContainer = document.getElementById("messages")
   let msgInput = document.getElementById("message-input");
@@ -268,13 +283,27 @@ if (document.title == "dashboard"){
     const giveMessageDirection = (id1,id2) => id1 === id2 ? "right" : "left"
 
     socketio.on("message",(msgObj)=>{
-      let messageDiv = document.createElement("div");
+      let messageDiv1 = document.createElement("div");
       let message = msgObj.message;
       let time = msgObj.time;
       let direction = giveMessageDirection(msgObj.id,userId);
 
-      displayMessage(messageDiv,msgContainer,message,time,direction);
-       
+      displayMessage(messageDiv1,msgContainer,message,time,direction);
+      
+    })
+    socketio.on("get_room_messages",(roomMsgs)=>{
+      if (!load_msgs){ 
+        for (let msgobj of roomMsgs){
+          let messageDiv2 = document.createElement("div");
+          let sender_id = msgobj[0];
+          let msg = msgobj[1];
+          let time = "coming";
+          let direction = giveMessageDirection(sender_id,userId);
+
+          displayMessage(messageDiv2,msgContainer,msg,time,direction);
+          load_msgs = true;
+        }
+      }
     })
   })
 }

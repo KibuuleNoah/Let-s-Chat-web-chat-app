@@ -18,7 +18,29 @@
    <p class="card-text align-self-center">moto: {{room.room_moto}}</p> 
  </div> 
 
- <button class="btn btn-primary align-self-center sm-btn pb-0 pt-0 mb-0 mt-0 join" value="{{room.room_name}}">Join</button> 
+ <button class="btn btn-primary align-self-center sm-btn pb-0 pt-0 mb-0 mt-0 enter" value="{{room.room_name}}">Join</button> 
 </div> 
 
+{% endmacro %}
+
+{% macro left_msg_card() %}
+<div style="max-width: 86%;" class="card mb-3 pb-0 ml-0">
+  <div class="card-header d-flex">
+    <img src="..." class="card-img-top align-self-start" alt="...">
+    <span class="align-self-end">kibuule_noah</span>
+  </div>
+  <div class="card-body pb-0">
+    <p class="card-text mb-0 pb-0">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
+    <p class="card-text m-0 p-0" style="text-align: right;"><small class="text-body-secondary">12:00 am</small></p>
+  </div>
+</div>
+{% endmacro %}
+
+{% macro right_msg_card() %}
+<div style="max-width: 86%;" class="card align-self-end mb-3 pb-0 ml-0">
+  <div class="card-body pb-0">
+    <p class="card-text mb-0 pb-0">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
+    <p class="card-text m-0 p-0" style="text-align: right;"><small class="text-body-secondary">12:00 am</small></p>
+  </div>
+</div>
 {% endmacro %}
