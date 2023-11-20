@@ -2,11 +2,11 @@ from flask import request
 from flask_socketio import SocketIO, emit, join_room
 from application import create_app
 from flask_login import current_user
+from application.Models.models import User, Message, Room, db
 from time import strftime
 import time
 
 # from application.Auth.auth import models
-room_ = ""
 
 
 app = create_app()
@@ -27,15 +27,53 @@ def handle_join_one(roomObj):
     emit("send_ids", {"user_id": current_user.id, "room": roomObj["room"]})
 
 
-@socketio.on("message-one")
-def handle_messsage_one(msgObj):
-    # print(msgObj["message"])
-    print(msgObj)
-    # print(f"\n rooms {socketio.server.rooms['/vws/oneonone'].keys()}\n")
-    current_time = strftime("%I:%M:%S %p")
-    d = {"message": msgObj["message"], "id": current_user.id, "time": current_time}
-    emit("message-one", d, broadcast=True, room=msgObj["room"])
+def save_message(msg, sender_id, room):
+    print("saving to the database")
+    print(msg, sender_id, room)
+
+
+@socketio.on("create_room")
+def create_room(roomObj):
+    room, moto, image = roomObj.values()
+    rooms = [rm.room_name for rm in Room.query.all() if rm]
+    print(f"rooms: \n{rooms}\n")
+    if room in rooms:
+        emit("confirm_room_exists", True)
+    rooms.append(room)
+    # save created room to the database
+    new_room = Room(room_name=room, room_moto=moto, creater_id=current_user.id)
+    db.session.add(new_room)
+    db.session.commit()
+    emit("confirm_room_exists", False)
+
+
+@socketio.on("message")
+def handle_messsage(msgObj):
+    msg, room, sender_id = msgObj.values()
+    print(msg, " for ", room, "from", sender_id)
+    curr_usr_id = current_user.id
+    curr_time = strftime("%I:%M:%S %p")
+    room_data = Room.query.filter_by(room_name=room).first()
+    # save message to the database
+    new_msg = Message(message=msg, sender_id=sender_id, room_id=room_data.id)
+    db.session.add(new_msg)
+    db.session.commit()
+    msgObj = {"message": msg, "id": curr_usr_id, "time": curr_time}
+    emit("message", msgObj, broadcast=True, room=room)
 
 
 if __name__ == "__main__":
     socketio.run(app, debug=True)
+#
+# # Example of updating data based on column1
+# YourModel.query.filter(YourModel.column1 == 'old_value').update({YourModel.column1: 'new_value'})
+# db.session.commit()
+#
+# class YourModel(db.Model):
+#     id = db.Column(db.Integer, primary_key=True)
+#     column1 = db.Column(db.String(50))
+#     column2 = db.Column(db.String(50))
+#
+# # Example of selecting data based on column1
+# result = YourModel.query.filter(YourModel.column1 == 'desired_value').all()
+#

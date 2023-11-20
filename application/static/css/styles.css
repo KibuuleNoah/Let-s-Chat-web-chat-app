@@ -78,6 +78,52 @@ html{
   color: rgba(0, 0, 0, 89);
 }
 
-#one{
+#chat-room{
   display: none;
 }
+
+#create-btn{
+  border: 0 !important;
+  border-radius: 0 !important;
+}
+
+#create-btn:active,#create-btn:hover{
+  background: rgba(0, 10, 255, .70) !important;
+}
+
+.sm-btn{
+  font-size: .65rem !important;
+  width: 4rem !important;
+  height: 1.5rem !important;
+}
+.sm-card-title{
+  font-size: .75rem !important;
+}
+
+.room-card{
+  padding: 0 !important;
+}
+
+.room-card{
+  border: 1px solid #eaeaea;
+  margin-left: 10px;
+  margin-top: 20px;
+  border-radius: 5px;
+  width: 8rem;
+  height: 8rem;
+  font-size: 40%;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: box-shadow 0.3s;
+}
+
+.room-card:hover,.room-card:active {
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.room-cust{
+  width: 25rem;
+  height: 8rem;
+  font-size: 40%;
+}
+
+

@@ -1,6 +1,7 @@
 from flask import render_template, request, url_for, Blueprint, flash
 from flask_login import current_user
 from flask_login import login_required
+from ..Models.models import Room
 import string
 
 views = Blueprint("views", __name__, template_folder="templates", url_prefix="/vws")
@@ -13,23 +14,25 @@ user = {
 }
 
 
-@views.route("/dashboard")
+@views.route("/dashboard", methods=["GET", "POST"])
 @login_required
 def dashboard():
-    return render_template("dashboard.html")
+    rooms = Room.query.all()
+    your_rooms = [rm for rm in rooms if rm.creater_id == current_user.id]
+    other_rooms = [rm for rm in rooms if not (rm.creater_id == current_user.id)]
+    print(your_rooms)
+    print(other_rooms)
+    return render_template(
+        "dashboard.html",
+        user_name=current_user.name,
+        your_rooms=your_rooms,
+        other_rooms=other_rooms,
+    )
 
 
 @views.route("/profile", methods=["GET", "POST"])
 @login_required
 def profile():
-    # if request.method == "POST":
-    #     name = request.form["name"]
-    #     if len(name) == 0:
-    #         flash("nothing input!!, Name not changed")
-    #     elif len(name) < 3:
-    #         flash("invalid name, it's too short", category="success")
-    #     elif name[0].isdigit():
-    #         flash("name can't start with a digit")
     return render_template("profile.html", user=user)
 
 
@@ -37,10 +40,3 @@ def profile():
 @login_required
 def room():
     return render_template("room.html")
-
-
-@views.route("/oneonone")
-@login_required
-def one_on_one():
-    print(f"\n{current_user}\n")
-    return render_template("one_on_one.html")

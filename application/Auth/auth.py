@@ -23,7 +23,7 @@ def create():
                 )
                 db.session.add(new_user)
                 db.session.commit()
-                login_user(new_user, remember=False)
+                login_user(new_user, remember=True)
                 return redirect(url_for("views.dashboard"))
     return render_template("create.html")
 
@@ -36,7 +36,7 @@ def login():
             user = User.query.filter_by(name=form["name"]).first()
             if user:
                 if check_password_hash(user.password, form["password"]):
-                    login_user(user, remember=False)
+                    login_user(user, remember=True)
                     return redirect(url_for("views.dashboard"))
                 else:
                     flash(
