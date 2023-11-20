@@ -17,9 +17,12 @@ def create():
             if user:
                 flash("user already exists", category="error")
             else:
+                with open("room.bin", "rb") as photo:
+                    default_photo = photo.read()
                 new_user = User(
                     name=form["name"],
                     password=generate_password_hash(form["password1"]),
+                    photo=default_photo,
                 )
                 db.session.add(new_user)
                 db.session.commit()

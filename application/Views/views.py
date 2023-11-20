@@ -2,7 +2,7 @@ from flask import render_template, request, url_for, Blueprint, flash
 from flask_login import current_user
 from flask_login import login_required
 from ..Models.models import Room
-import string
+import string, base64
 
 views = Blueprint("views", __name__, template_folder="templates", url_prefix="/vws")
 
@@ -34,8 +34,11 @@ def dashboard():
 @login_required
 def profile():
     if request.method == "POST":
-        print(request.files)
-        print(request.form)
+        # print(request.files)
+        prof_img = request.files.get("img-input")
+        # img_data = base64.b64encode(prof_img.read()).decode("utf-8")
+        print(prof_img.read())
+        print(prof_img)
     return render_template("profile.html", user=user)
 
 

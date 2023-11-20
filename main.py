@@ -46,8 +46,12 @@ def create_room(roomObj):
     if room in rooms:
         emit("confirm_room_exists", True)
     rooms.append(room)
+    with open("room.bin") as image:
+        default_image = image.read()
     # save created room to the database
-    new_room = Room(room_name=room, room_moto=moto, creater_id=current_user.id)
+    new_room = Room(
+        room_name=room, room_moto=moto, creater_id=current_user.id, image=default_image
+    )
     db.session.add(new_room)
     db.session.commit()
     emit("confirm_room_exists", False)
