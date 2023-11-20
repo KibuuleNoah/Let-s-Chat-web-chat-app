@@ -2,6 +2,24 @@ const messageInput = document.getElementById("message-input");
 const socketio = io({autoConnect:false});
 socketio.connect()
 
+const handleImage = () => {
+  const input = document.getElementById('img-input');
+  const preview = document.getElementById('prof-img');
+  const form = document.getElementById('upload-prof-img');
+  // form.submit();
+  if (input.files && input.files[0]) {
+    // const reader = new FileReader();
+    //
+    // reader.onload = function (e) {
+    //   preview.src = e.target.result;
+    // };
+    //
+    // reader.readAsDataURL(input.files[0]);
+    //
+    // Submit the form programmatically after selecting the image
+    form.submit();
+  }
+}
 
 const startsWithdigit = (str)=>/^[0-9].+/.test(str);
 const validatePasswordFormat = (pwd)=>/^(?=(.*\d){2,})(?=(.*[a-z]){3,})(?=(.*[A-Z]){1,})(?=(.*\W){1,}).{6,12}$/.test(pwd);
@@ -26,27 +44,28 @@ if (document.title == "profile"){
       nameToast.hide();
     });
   });
-  const handleImage = () => {
-    const input = document.getElementById('img-input');
-    const preview = document.getElementById('prof-img');
-    const form = document.getElementById('upload-prof-img');
-
-    if (input.files && input.files[0]) {
-      const reader = new FileReader();
-
-      reader.onload = function (e) {
-        preview.src = e.target.result;
-      };
-
-      reader.readAsDataURL(input.files[0]);
-
-      // Submit the form programmatically after selecting the image
-      form.submit();
-    }
-  }
-  document.getElementById("img-input").addEventListener("onchange",()=>{
-    handleImage()
-  })
+  // const handleImage = () => {
+  //   const input = document.getElementById('img-input');
+  //   const preview = document.getElementById('prof-img');
+  //   const form = document.getElementById('upload-prof-img');
+  //   form.submit();
+    // if (input.files && input.files[0]) {
+    //   const reader = new FileReader();
+    //
+    //   reader.onload = function (e) {
+    //     preview.src = e.target.result;
+    //   };
+    //
+    //   reader.readAsDataURL(input.files[0]);
+    //
+    //   // Submit the form programmatically after selecting the image
+    //   form.submit();
+    // }
+  // }
+  // document.getElementById("img-input").addEventListener("onchange",()=>{
+  //   handleImage()
+  //   console.log("imga")
+  // })
 }
 
 if (document.title == "room"){
@@ -335,3 +354,4 @@ if (document.title == "dashboard"){
     })
   })
 }
+

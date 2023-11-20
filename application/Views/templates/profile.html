@@ -9,15 +9,15 @@
 <div class="mt-2 profile">
   <div class="photo">
     <div class="d-flex justify-content-center">
-      <form id="upload-prof-img" method="POST">
+      <form id="upload-prof-img" name="upload-prof-img" method="POST" enctype="multipart/form-data">
         <label for="img-input">
-          <img id="prof-img" class="img-fluid" src="{{url_for('static',filename=user['photo'])}}" style="border: 3px solid green;border-radius: 50%;" alt="" width="200" height="200">
-          <input type="file" accept="image/*" name="img-input" id="img-input" style="display:none;">
+          <img id="prof-img" name="prof-img" class="img-fluid" src="{{url_for('static',filename=user['photo'])}}" style="border: 3px solid green;border-radius: 50%;" alt="" width="200" height="200">
+          <input type="file" id="img-input" name="img-input" style="display:none;" onchange="handleImage();">
         </label>
       </form>
     </div>
   </div>
-  
+
   <div class="name">Name: </div>
   <div class="text-info Name">{{user["name"]}}</div>
   <div class="Freinds">Freinds: </div>

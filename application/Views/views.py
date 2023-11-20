@@ -33,6 +33,9 @@ def dashboard():
 @views.route("/profile", methods=["GET", "POST"])
 @login_required
 def profile():
+    if request.method == "POST":
+        print(request.files)
+        print(request.form)
     return render_template("profile.html", user=user)
 
 
