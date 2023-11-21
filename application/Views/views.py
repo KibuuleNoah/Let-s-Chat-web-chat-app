@@ -1,6 +1,7 @@
 from flask import render_template, request, url_for, Blueprint, flash
 from flask_login import current_user
 from flask_login import login_required
+from werkzeug.security import check_password_hash, generate_password_hash
 from ..Models.models import Room, User, db
 import string, base64
 
@@ -14,6 +15,7 @@ user = {
 }
 
 
+# gets current user id and returns the user image
 def get_user_img(id_):
     user = User.query.get(id_)
     with open("test.png", "wb") as f:
@@ -21,10 +23,33 @@ def get_user_img(id_):
     return base64.b64encode(user.photo).decode("utf-8")
 
 
+# update user name
+def update_user_name(new_name):
+    user = User.query.filter_by(name=new_name).first()
+    if not user:
+        print(f"updating name .........with {new_name}")
+        return
+        # User.query.filter_by(id=current_user.id).update({User.password: new_password})
+        # db.session.commit()
+    flash("User Name already in User, Use another one", category="error")
+
+
+def update_user_password(old_password, new_password):
+    # update user password
+    if check_password_hash(current_user.password, old_password):
+        print("updating password.......")
+
+    # pwd_hash = generate_password_hash(new_password)
+    # User.query.filter_by(id=current_user.id).update({User.password: pwd_hash})
+    # db.session.commit()
+
+
+# dashboard routr
 @views.route("/dashboard", methods=["GET", "POST"])
 @login_required
 def dashboard():
     user_img = get_user_img(current_user.id)
+    # lists all rooms
     rooms = Room.query.all()
     your_rooms = [rm for rm in rooms if rm.creater_id == current_user.id]
     other_rooms = [rm for rm in rooms if not (rm.creater_id == current_user.id)]
@@ -39,30 +64,31 @@ def dashboard():
     )
 
 
+# profile route. for displaying and updating user information
 @views.route("/profile", methods=["GET", "POST"])
 @login_required
 def profile():
     user_img = get_user_img(current_user.id)
-    print(user_img, "image data")
+    # print(user_img, "image data")
     if request.method == "POST":
+        new_name = request.form.get("name")
+        old_password = request.form.get("password1")
+        new_password = request.form.get("password2")
+        print(new_password)
+        print(new_name)
+        if new_name:
+            update_user_name(new_name)
+        elif new_password:
+            update_user_password(old_password, new_password)
+
+        # fetches newly uploaded image
         prof_img = request.files.get("img-input")
         if prof_img:
-            # img_data = base64.b64encode(prof_img.read()).decode("utf-8")
-            new_img = prof_img.read()
-            print(prof_img)
-            usr = User.query.filter_by(id=current_user.id).update({User.photo: new_img})
-            # print(usr.photo)
-            # print(usr)
-            # usr.update()
-            print(usr)
-            # {User.photo: prof_img.read()}
-            # )
-            db.session.commit()
+            ...
+            # new_img = prof_img.read()
+            # print(prof_img)
+            # updates user photo
+            # User.query.filter_by(id=current_user.id).update({User.photo: new_img})
+            # db.session.commit()
 
-    return render_template("profile.html", user=user, img=user_img)
-
-
-@views.route("/room")
-@login_required
-def room():
-    return render_template("room.html")
+    return render_template("profile.html", user=current_user, img=user_img)

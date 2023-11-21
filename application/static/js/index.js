@@ -18,6 +18,13 @@ const handleImage = () => {
     //
     // Submit the form programmatically after selecting the image
     form.submit();
+    let pF = document.forms["change-password-form"];
+    let nF = document.forms["change-name-form"];
+    pF["password1"].value = ""  
+    pF["password2"].value = ""  
+    pF["password3"].value = ""  
+    nF["name"].value = ""  
+
   }
 }
 
