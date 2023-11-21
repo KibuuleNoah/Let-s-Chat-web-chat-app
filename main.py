@@ -46,7 +46,7 @@ def create_room(roomObj):
     if room in rooms:
         emit("confirm_room_exists", True)
     rooms.append(room)
-    with open("room.bin") as image:
+    with open("room.bin", "rb") as image:
         default_image = image.read()
     # save created room to the database
     new_room = Room(
