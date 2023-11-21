@@ -2,6 +2,7 @@ from flask import request
 from flask_socketio import SocketIO, emit, join_room
 from application import create_app
 from flask_login import current_user
+from application.Views.views import get_user_img
 from application.Models.models import User, Message, Room, db
 from time import strftime
 import time
@@ -29,7 +30,15 @@ def handle_join_one(roomObj):
     emit("send_ids", {"user_id": current_user.id, "room": roomObj["room"]})
     emit(
         "get_room_messages",
-        [[msgobj.sender_id, msgobj.message] for msgobj in room_msgs],
+        [
+            [
+                # get sender image by using the sender id
+                get_user_img(msgobj.sender_id),
+                msgobj.sender_id,
+                msgobj.message,
+            ]
+            for msgobj in room_msgs
+        ],
     )
 
 

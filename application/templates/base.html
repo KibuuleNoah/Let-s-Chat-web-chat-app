@@ -17,13 +17,13 @@
     {% if messages %} 
     {% for category, message in messages %} 
     {% if category =='error' %}
-    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+    <div class="alert alert-danger alert-dismissible fade show position-absolute top-0 mb-0 w-100" role="alert">
       {{message}}
       <!-- <strong>Holy guacamole!</strong> You should check in on some of those fields below. -->
       <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
     {% else %}
-    <div class="alert alert-success alert-dismissible fade show" role="alert">
+    <div class="alert alert-success alert-dismissible fade show position-absolute top-0 mb-0 w-100" role="alert">
       {{message}}
       <!-- <strong>Holy guacamole!</strong> You should check in on some of those fields below. -->
       <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>

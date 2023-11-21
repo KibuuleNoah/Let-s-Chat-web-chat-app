@@ -1,11 +1,24 @@
 {% macro your_room(room) %}
-<div class="card d-flex pt-0 pb-0 room-card"> 
-   <img style="height:3rem;width:3rem;" class="h-img align-self-center pb-0 mb-0" src="{{url_for('static',filename='imgs/image.jpg')}}" class="card-img-top" alt="..."> 
+<div class="card d-flex pt-0 pb-0 position-relative room-card"> 
+  <!-- <button class="position-absolute top-0 right-0">t</span>   -->
+  <!-- <button type="button" class="btn btn-secondary position-absolute top-0 left-0" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Tooltip on bottom"> Tooltip on bottom</button> -->
+  <div class="dropdown">
+    <a class="position-absolute top-0 end-0" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+      <i class="bi bi-three-dots-vertical fs-6"></i>
+    </a>
+
+    <ul class="dropdown-menu">
+      <li><button class="dropdown-item text-danger"><i class="bi bi-trash"></i> Delete</button></li>
+      <li><button id="edit" class="dropdown-item text-success"><i class="bi bi-pen"></i> Edit</button></li>
+    </ul>
+  </div>
+ 
+  <img style="height:3rem;width:3rem;" class="h-img align-self-center pb-0 mb-0" src="{{url_for('static',filename='imgs/image.jpg')}}" class="card-img-top" alt="..."> 
    <div class="card-body d-flex flex-column mt-0 pt-0"> 
      <p class="card-title sm-card-title align-self-center">{{room.room_name}}</p> 
      <p class="card-text">MOTO: {{room.room_moto}}</p> 
      <button class="btn btn-primary align-self-center sm-btn pb-0 pt-0 mb-0 mt-0 enter" value="{{room.room_name}}" >Enter</button> 
-   </div> 
+   </div>
  </div> 
 {% endmacro %}
 

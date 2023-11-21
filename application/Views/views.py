@@ -27,21 +27,22 @@ def get_user_img(id_):
 def update_user_name(new_name):
     user = User.query.filter_by(name=new_name).first()
     if not user:
-        print(f"updating name .........with {new_name}")
+        User.query.filter_by(id=current_user.id).update({User.name: new_name})
+        db.session.commit()
+        flash("Name updated successfully!!")
         return
-        # User.query.filter_by(id=current_user.id).update({User.password: new_password})
-        # db.session.commit()
     flash("User Name already in User, Use another one", category="error")
 
 
 def update_user_password(old_password, new_password):
     # update user password
     if check_password_hash(current_user.password, old_password):
-        print("updating password.......")
-
-    # pwd_hash = generate_password_hash(new_password)
-    # User.query.filter_by(id=current_user.id).update({User.password: pwd_hash})
-    # db.session.commit()
+        pwd_hash = generate_password_hash(new_password)
+        User.query.filter_by(id=current_user.id).update({User.password: pwd_hash})
+        db.session.commit()
+        flash("Password updated successfully!!", category="success")
+        return
+    flash("You entered an correct old password", category="error")
 
 
 # dashboard routr
@@ -72,13 +73,14 @@ def profile():
     # print(user_img, "image data")
     if request.method == "POST":
         new_name = request.form.get("name")
-        old_password = request.form.get("password1")
+        old_password = request.form.get("password")
         new_password = request.form.get("password2")
         print(new_password)
+        print(old_password)
         print(new_name)
         if new_name:
             update_user_name(new_name)
-        elif new_password:
+        elif old_password and new_password:
             update_user_password(old_password, new_password)
 
         # fetches newly uploaded image
@@ -92,3 +94,8 @@ def profile():
             # db.session.commit()
 
     return render_template("profile.html", user=current_user, img=user_img)
+
+
+@views.route("/settings")
+def settings():
+    return render_template("settings.html")

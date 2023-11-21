@@ -213,7 +213,7 @@ const sendMessage = (msgInput,room,sender_id) =>{
 
 }
 
-const displayMessage = (messageDiv,msgContainer,message,time,direction)=>{
+const displayMessage = (messageDiv,msgContainer,message,time,direction,sender_img=null)=>{
   if (message){
     if (direction == "right"){
       messageDiv.setAttribute("class",`card align-self-end mb-3 pb-0 ml-0`);
@@ -230,8 +230,8 @@ const displayMessage = (messageDiv,msgContainer,message,time,direction)=>{
       messageDiv.setAttribute("class","card mb-3 pb-0 ml-0");
       messageDiv.innerHTML = `
       <div class="card-header d-flex">
-        <img src="..." class="card-img-top align-self-start" alt="...">
-        <span class="align-self-end">kibuule_noah</span>
+        <img src="data:image/png;base64,${sender_img}" class="card-img-top align-self-start" alt="..." style="width:30px;height:30px;border-radius:50%;">
+        <span class="m-15">kibuule_noah</span>
       </div>
       <div class="card-body pb-0">
         <p class="card-text mb-0 pb-0">${message}</p>
@@ -351,14 +351,17 @@ if (document.title == "dashboard"){
     socketio.on("get_room_messages",(roomMsgs)=>{
       for (let msgobj of roomMsgs){
         let messageDiv2 = document.createElement("div");
-        let sender_id = msgobj[0];
-        let msg = msgobj[1];
+        let sender_id = msgobj[1];
+        let msg = msgobj[2];
+        console.log(msgobj[0])
         let time = "coming";
         let direction = giveMessageDirection(sender_id,userId);
 
-        displayMessage(messageDiv2,msgContainer,msg,time,direction);
+        displayMessage(messageDiv2,msgContainer,msg,time,direction,sender_id=msgobj[0]);
       }
     })
   })
 }
-
+// <button type="button" class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Tooltip on bottom">
+  // Tooltip on bottom
+// </button>
