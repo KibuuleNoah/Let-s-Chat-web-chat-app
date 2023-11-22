@@ -1,27 +1,48 @@
 {% extends "base.html"%}
 {% block content %}
 <div class="container mt-5">
-      <h2 class="mb-4">Chat Room Settings</h2>
+  <h2 class="mb-4 text-warning">Chat Room Settings</h2>
 
-      <!-- Form for updating room name -->
-      <form>
-          <div class="form-group">
-              <label for="roomName">Room Name</label>
-              <input type="text" class="form-control" id="roomName" placeholder="Enter new room name">
-          </div>
-
-          <!-- Form for updating room image -->
-          <div class="form-group">
-              <label for="roomImage">Room Image URL</label>
-              <input type="url" class="form-control" id="roomImage" placeholder="Enter URL for new room image">
-          </div>
-
-          <!-- Button to submit the form -->
-          <button type="submit" class="btn btn-primary">Update</button>
-      </form>
+  <!-- Checkboxes to control form-group visibility -->
+  <hr class="text-info">
+  <i class="text-info"><u><h5>Select Update Area</h5></u></i>
+  <div class="form-check form-check-inline">
+    <input type="checkbox" class="form-check-input" id="roomNameCheckbox">
+    <label class="form-check-label" for="roomNameCheckbox">Room Name</label>
   </div>
+  
+  <div class="form-check form-check-inline">
+    <input type="checkbox" class="form-check-input" id="roomImageCheckbox">
+    <label class="form-check-label" for="roomImageCheckbox">Room Image</label>
+  </div>
+  <hr class="text-info">
+
+  <!-- Form for updating room name -->
+  <form method="POST" name="update-room" enctype="multipart/form-data">
+    <div class="form-group">
+      <label for="room-name">Room Name</label>
+      <input type="text" class="form-control" id="room-name" name="room-name" placeholder="Enter new room name" disabled>
+    </div>
+
+    <!-- Form for updating room image -->
+    <div class="form-group">
+        <label for="room-image">Room Image URL</label>
+        <input type="file" class="form-control" id="room-image" name="room-image" placeholder="Enter URL for new room image" disabled>
+    </div>
+
+    <!-- Button to submit the form -->
+    <button type="submit" class="btn btn-primary mt-2">Update</button>
+  </form>
+</div>
+
+<!-- JavaScript to toggle form-group visibility -->
+<script>
+    document.getElementById('roomNameCheckbox').addEventListener('change', function() {
+        document.getElementById('room-name').disabled = !this.checked;
+    });
+
+    document.getElementById('roomImageCheckbox').addEventListener('change', function() {
+        document.getElementById('room-image').disabled = !this.checked;
+    });
+</script>
 {% endblock %}
-    <!-- Bootstrap JS and Popper.js -->
-    <!-- <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script> -->
-    <!-- <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.7/dist/umd/popper.min.js"></script> -->
-    <!-- <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script> -->

@@ -49,17 +49,23 @@ def save_message(msg, sender_id, room):
 
 @socketio.on("create_room")
 def create_room(roomObj):
-    room, moto, image = roomObj.values()
+    room, moto = roomObj.values()
+    # data = request.get_json()
+    # image_data = data.get("imageData")
     rooms = [rm.room_name for rm in Room.query.all() if rm]
     print(f"rooms: \n{rooms}\n")
     if room in rooms:
         emit("confirm_room_exists", True)
     rooms.append(room)
+    # if not image_data:
     with open("room.bin", "rb") as image:
-        default_image = image.read()
+        image_data = image.read()
     # save created room to the database
     new_room = Room(
-        room_name=room, room_moto=moto, creater_id=current_user.id, image=default_image
+        room_name=room,
+        room_moto=moto,
+        creater_id=current_user.id,
+        image=image_data.encode(),
     )
     db.session.add(new_room)
     db.session.commit()
@@ -79,6 +85,11 @@ def handle_messsage(msgObj):
     db.session.commit()
     msgObj = {"message": msg, "id": curr_usr_id, "time": curr_time}
     emit("message", msgObj, broadcast=True, room=room)
+
+
+@socketio.on("test")
+def test(n):
+    print(n)
 
 
 if __name__ == "__main__":

@@ -1,4 +1,4 @@
-from flask import render_template, request, url_for, Blueprint, flash
+from flask import render_template, request, url_for, Blueprint, flash, jsonify
 from flask_login import current_user
 from flask_login import login_required
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -18,9 +18,7 @@ user = {
 # gets current user id and returns the user image
 def get_user_img(id_):
     user = User.query.get(id_)
-    with open("test.png", "wb") as f:
-        f.write(user.photo)
-    return base64.b64encode(user.photo).decode("utf-8")
+    return user.photo.decode()
 
 
 # update user name
@@ -34,6 +32,7 @@ def update_user_name(new_name):
     flash("User Name already in User, Use another one", category="error")
 
 
+# updates user password
 def update_user_password(old_password, new_password):
     # update user password
     if check_password_hash(current_user.password, old_password):
@@ -45,7 +44,22 @@ def update_user_password(old_password, new_password):
     flash("You entered an correct old password", category="error")
 
 
-# dashboard routr
+# updates room info like name and image
+def update_room_info(room_id, new_name, new_image):
+    room = Room.query.get(room_id)
+    if room.creater_id == current_user.id:
+        print("update allowed")
+        if new_name:
+            # Room.query.filter_by(id=room_id).update({Room.room_name: new_name})
+            # db.session.commit
+            print("updating room name")
+        if new_image:
+            # Room.query.filter_by(id=room_id).update({Room.image: new_image})
+            # db.session.commit()
+            print("updating room image")
+
+
+# dashboard route
 @views.route("/dashboard", methods=["GET", "POST"])
 @login_required
 def dashboard():
@@ -72,12 +86,12 @@ def profile():
     user_img = get_user_img(current_user.id)
     # print(user_img, "image data")
     if request.method == "POST":
+        data = request.get_json()
+        image_data = data.get("imageData")
+
         new_name = request.form.get("name")
         old_password = request.form.get("password")
         new_password = request.form.get("password2")
-        print(new_password)
-        print(old_password)
-        print(new_name)
         if new_name:
             update_user_name(new_name)
         elif old_password and new_password:
@@ -85,17 +99,33 @@ def profile():
 
         # fetches newly uploaded image
         prof_img = request.files.get("img-input")
-        if prof_img:
-            ...
-            # new_img = prof_img.read()
-            # print(prof_img)
+        if image_data:
             # updates user photo
-            # User.query.filter_by(id=current_user.id).update({User.photo: new_img})
-            # db.session.commit()
+            User.query.filter_by(id=current_user.id).update(
+                {User.photo: image_data.encode()}
+            )
+            db.session.commit()
+        return jsonify({"message": "Image uploaded successfully"})
 
     return render_template("profile.html", user=current_user, img=user_img)
 
 
-@views.route("/settings")
-def settings():
+# settings route for rendering settings page
+@views.route("/settings/<room_id>", methods=["POST", "GET"])
+@login_required
+def settings(room_id):
+    if request.method == "POST":
+        new_room_name = request.form.get("room-name")
+        new_room_image = request.files.get("room-image")
+        update_room_info(int(room_id), new_room_name, new_room_image)
     return render_template("settings.html")
+
+
+# @views.route("/upload", methods=["POST"])
+# def upload():
+#     data = request.get_json()
+#     image_data = data.get("imageData")
+#     # print(image_data)
+#     # Process the image_data as needed (e.g., save it to the database)
+#
+#     return jsonify({"message": "Image uploaded successfully"})

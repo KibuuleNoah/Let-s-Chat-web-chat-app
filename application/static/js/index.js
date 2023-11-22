@@ -2,22 +2,72 @@ const messageInput = document.getElementById("message-input");
 const socketio = io({autoConnect:false});
 socketio.connect()
 
+const sendToFlaskBackend = (croppedDataURL,endpoint)=> {
+  // Make an HTTP POST request to your Flask backend
+  fetch(`http://127.0.0.1:5000${endpoint}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ imageData: croppedDataURL }),
+  })
+  .then(response => response.json())
+  .then(data => {
+    console.log('Response from Flask:', data);
+  })
+  .catch(error => {
+    console.error('Error:', error);
+  });
+}
+
+const cropAndSendImage = (input,endpoint=null,socket=null)=> {
+  const file = input.files[0];
+  // Check if a file is selected
+  if (file) {
+    const reader = new FileReader();
+    // Read the file as a data URL
+    reader.readAsDataURL(file);
+    reader.onload = function (e) {
+      // Create an image element
+      const img = new Image();
+      img.src = e.target.result;
+      // Set up an event listener for the image load
+      img.onload = function () {
+        // Create a canvas element
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        // Set the canvas dimensions to 200x200
+        canvas.width = 200;
+        canvas.height = 200;
+        // Draw the image on the canvas with 200x200 dimensions
+        ctx.drawImage(img, 0, 0, 200, 200);
+        // Get the cropped image as a data URL
+        const croppedDataURL = canvas.toDataURL('image/png');
+        // console.log(croppedDataURL);
+        if (endpoint && !socket){
+          sendToFlaskBackend(croppedDataURL,endpoint);
+        }
+        else if (socket && !endpoint){
+          socketio.emit("test",{"ID":croppedDataURL});
+        }
+      };
+    };
+  }
+}
+
+
+
 const handleImage = () => {
   const input = document.getElementById('img-input');
   const preview = document.getElementById('prof-img');
   const form = document.getElementById('upload-prof-img');
-  // form.submit();
+  
+  cropAndSendImage(input,"/vws/profile");
+  
   if (input.files && input.files[0]) {
-    // const reader = new FileReader();
-    //
-    // reader.onload = function (e) {
-    //   preview.src = e.target.result;
-    // };
-    //
-    // reader.readAsDataURL(input.files[0]);
-    //
+    // console.log(cropImage(input))
     // Submit the form programmatically after selecting the image
-    form.submit();
+    // form.submit();
     let pF = document.forms["change-password-form"];
     let nF = document.forms["change-name-form"];
     pF["password1"].value = ""  
@@ -247,7 +297,17 @@ const displayMessage = (messageDiv,msgContainer,message,time,direction,sender_im
 
 const yourRoom = (name,moto,photo=null)=>{
   return `
-    <img style="height:3rem;width:3rem;" class="h-img align-self-center pb-0 mb-0" src="{{url_for('static',filename='imgs/image.jpg')}}" class="card-img-top" alt="..."> 
+    <div class="dropdown">
+      <a class="text-info position-absolute top-0 end-0" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+        <i class="bi bi-three-dots-vertical fs-6"></i>
+      </a>
+
+      <ul class="dropdown-menu">
+        <li><button class="dropdown-item text-danger" value="${name}"><i class="bi bi-trash"></i> Delete</button></li>
+        <li><button class="dropdown-item text-success" value="${name}"><i class="bi bi-pen"></i> Edit</button></li>
+      </ul>
+    </div>
+    <img style="height:3rem;width:3rem;" class="h-img align-self-center pb-0 mb-0" src="{{url_for('static',filename='imgs/room.png')}}" class="card-img-top" alt="..."> 
     <div class="card-body d-flex flex-column mt-0 pt-0"> 
       <p class="card-title sm-card-title align-self-center">${name}<sup style="color:green;">*new</sup></p> 
       <p class="card-text">moto: ${moto}</p> 
@@ -258,12 +318,17 @@ const yourRoom = (name,moto,photo=null)=>{
 
 const createYourRoomCard = (roomName,roomMoto)=>{
   let yourRoomsSection = document.getElementById("your-rooms");
-  let test = document.createElement("div");
-  test.setAttribute("class","card d-flex pt-0 pb-0 room-card")
-  test.style.border = "1px solid green"
-  test.innerHTML = yourRoom(roomName,roomMoto);
-  yourRoomsSection.appendChild(test);
-
+  let yourRoomElem = document.createElement("div");
+  yourRoomElem.setAttribute("class","card d-flex pt-0 pb-0 room-card")
+  yourRoomElem.style.border = "1px solid green"
+  yourRoomElem.innerHTML = yourRoom(roomName,roomMoto);
+  yourRoomsSection.appendChild(yourRoomElem);
+  
+  for (let settingBtn of yourRoomElem.querySelectorAll("div ul li button")){
+    settingBtn.addEventListener("click",()=>{
+      console.log(settingBtn.value)
+    })
+  }
 };
 
 const clearForm = (form)=>{
@@ -303,9 +368,10 @@ if (document.title == "dashboard"){
 
     let roomName = form["room-name"].value//.value)
     let roomMoto = form["room-moto"].value
-    let roomImage = form["room-image"].value
+    let roomImageInput = form["room-image"]
     if (roomName && roomMoto){
-      socketio.emit("create_room",{name:roomName,moto: roomMoto,image:roomImage});
+      socketio.emit("create_room",{name:roomName,moto: roomMoto});
+      cropAndSendImage(roomImageInput,"")
       socketio.on("confirm_room_exists",(res)=>{
         console.log(res)
         console.log(typeof res)
@@ -361,7 +427,12 @@ if (document.title == "dashboard"){
       }
     })
   })
+  let deletRoomBtns = document.querySelectorAll(".dropdown-item.text-danger");
+  for (let deletRoomBtn of deletRoomBtns){
+    deletRoomBtn.addEventListener("click",()=>{
+      console.log(deletRoomBtn.value) 
+      console.log(deletRoomBtn.className)
+    })
+  }
 }
-// <button type="button" class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Tooltip on bottom">
-  // Tooltip on bottom
-// </button>
+
