@@ -48,7 +48,7 @@ const cropAndSendImage = (input,endpoint=null,socket=null)=> {
           sendToFlaskBackend(croppedDataURL,endpoint);
         }
         else if (socket && !endpoint){
-          socketio.emit("test",{"ID":croppedDataURL});
+          socketio.emit(socket,{"imageData":croppedDataURL});
         }
       };
     };
@@ -307,7 +307,7 @@ const yourRoom = (name,moto,photo=null)=>{
         <li><button class="dropdown-item text-success" value="${name}"><i class="bi bi-pen"></i> Edit</button></li>
       </ul>
     </div>
-    <img style="height:3rem;width:3rem;" class="h-img align-self-center pb-0 mb-0" src="{{url_for('static',filename='imgs/room.png')}}" class="card-img-top" alt="..."> 
+    <img style="height:3rem;width:3rem;" class="h-img align-self-center pb-0 mb-0" src="${photo}" class="card-img-top" alt="..."> 
     <div class="card-body d-flex flex-column mt-0 pt-0"> 
       <p class="card-title sm-card-title align-self-center">${name}<sup style="color:green;">*new</sup></p> 
       <p class="card-text">moto: ${moto}</p> 
@@ -316,12 +316,12 @@ const yourRoom = (name,moto,photo=null)=>{
 }
 
 
-const createYourRoomCard = (roomName,roomMoto)=>{
+const createYourRoomCard = (roomName,roomMoto,n)=>{
   let yourRoomsSection = document.getElementById("your-rooms");
   let yourRoomElem = document.createElement("div");
   yourRoomElem.setAttribute("class","card d-flex pt-0 pb-0 room-card")
   yourRoomElem.style.border = "1px solid green"
-  yourRoomElem.innerHTML = yourRoom(roomName,roomMoto);
+  yourRoomElem.innerHTML = yourRoom(roomName,roomMoto,n.imageData);
   yourRoomsSection.appendChild(yourRoomElem);
   
   for (let settingBtn of yourRoomElem.querySelectorAll("div ul li button")){
@@ -371,14 +371,19 @@ if (document.title == "dashboard"){
     let roomImageInput = form["room-image"]
     if (roomName && roomMoto){
       socketio.emit("create_room",{name:roomName,moto: roomMoto});
-      cropAndSendImage(roomImageInput,"")
+      cropAndSendImage(roomImageInput,null,"test")
       socketio.on("confirm_room_exists",(res)=>{
         console.log(res)
         console.log(typeof res)
         if (!res){
-          createYourRoomCard(roomName,roomMoto);
-          clearForm(form);
-          createRoomToast.hide();
+          socketio.on("room_img",(n)=>{
+            createYourRoomCard(roomName,roomMoto,n);
+            clearForm(form);
+            createRoomToast.hide();
+          })
+          // createYourRoomCard(roomName,roomMoto);
+          // clearForm(form);
+          // createRoomToast.hide();
         }
         else{
           clearForm(form);
@@ -435,4 +440,12 @@ if (document.title == "dashboard"){
     })
   }
 }
-
+//delete chat room
+const deleteRoom = (roomId)=> {
+  fetch("/vws/delete-room", {
+    method: "POST",
+    body: JSON.stringify({ roomId: roomId }),
+  }).then((_res) => {
+    window.location.href = "/vws/dashboard";
+  });
+}

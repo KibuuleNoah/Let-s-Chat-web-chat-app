@@ -1,4 +1,4 @@
-from flask import render_template, request, url_for, Blueprint, flash, jsonify
+from flask import json, render_template, request, url_for, Blueprint, flash, jsonify
 from flask_login import current_user
 from flask_login import login_required
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -119,6 +119,20 @@ def settings(room_id):
         new_room_image = request.files.get("room-image")
         update_room_info(int(room_id), new_room_name, new_room_image)
     return render_template("settings.html")
+
+
+@views.route("/delete-room", methods=["POST"])
+def delete_room():
+    room = json.loads(
+        request.data
+    )  # this function expects a JSON from the INDEX.js file
+    roomId = room["roomId"]
+    room = Room.query.get(roomId)
+    if room and (room.creater_id == current_user.id):
+        db.session.delete(room)
+        db.session.commit()
+
+    return jsonify({})
 
 
 # @views.route("/upload", methods=["POST"])

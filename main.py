@@ -50,12 +50,14 @@ def save_message(msg, sender_id, room):
 @socketio.on("create_room")
 def create_room(roomObj):
     room, moto = roomObj.values()
+    print(room, moto, end="\n")
     # data = request.get_json()
     # image_data = data.get("imageData")
     rooms = [rm.room_name for rm in Room.query.all() if rm]
     print(f"rooms: \n{rooms}\n")
     if room in rooms:
         emit("confirm_room_exists", True)
+    emit("confirm_room_exists", False)
     rooms.append(room)
     # if not image_data:
     with open("room.bin", "rb") as image:
@@ -87,9 +89,12 @@ def handle_messsage(msgObj):
     emit("message", msgObj, broadcast=True, room=room)
 
 
+########failed to save the img of a room to the database
+
+
 @socketio.on("test")
 def test(n):
-    print(n)
+    emit("room_img", n)
 
 
 if __name__ == "__main__":

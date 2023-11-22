@@ -7,7 +7,7 @@
       </a>
 
       <ul class="dropdown-menu">
-        <li><button class="dropdown-item text-danger" value="{{room.room_name}}"><i class="bi bi-trash"></i> Delete</button></li>
+        <li><button class="dropdown-item text-danger" value="{{room.room_name}}" onclick="deleteRoom({{room.id}})"><i class="bi bi-trash"></i> Delete</button></li>
         <li><a href="/vws/settings/{{room.id}}" class="dropdown-item text-success" value="{{room.room_name}}"><i class="bi bi-pen"></i> Edit</a></li>
       </ul>
     </div>
