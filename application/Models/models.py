@@ -16,18 +16,6 @@ class User(db.Model, UserMixin):
     messages = db.relationship("Message")
     rooms = db.relationship("Room")
 
-    def __init__(
-        self,
-        id: int = 0,
-        name: str = "",
-        password: str = "",
-        photo: bytes = b"",
-        joined: str = "",
-        messages: str = "",
-        rooms: int = 0,
-    ):
-        ...
-
 
 class Message(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -37,16 +25,6 @@ class Message(db.Model):
     time = db.Column(
         db.DateTime(timezone=True), nullable=False, default=datetime.utcnow
     )
-
-    def __init__(
-        self,
-        id: int = 0,
-        message: str = "",
-        sender_id: int = 0,
-        room_id: int = 0,
-        time: str = "",
-    ):
-        ...
 
 
 class Room(db.Model):
@@ -59,20 +37,6 @@ class Room(db.Model):
     num_clients = db.Column(db.Integer, nullable=False, default=0)
     messages = db.relationship("Message")
     users = db.relationship("User")
-
-    def __init__(
-        self,
-        id: int = 0,
-        room_name: str = "",
-        room_moto: str = "",
-        creater_id: int = 0,
-        image: bytes = b"",
-        create_date_time: str = "",
-        num_clients: int = 0,
-        messages: str = "",
-        users: str = "",
-    ):
-        ...
 
 
 #

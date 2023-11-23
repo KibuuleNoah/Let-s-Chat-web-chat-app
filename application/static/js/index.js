@@ -2,6 +2,7 @@ const messageInput = document.getElementById("message-input");
 const socketio = io({autoConnect:false});
 socketio.connect()
 
+//send the cropped image to the backend
 const sendToFlaskBackend = (croppedDataURL,endpoint)=> {
   // Make an HTTP POST request to your Flask backend
   fetch(`http://127.0.0.1:5000${endpoint}`, {
@@ -20,7 +21,9 @@ const sendToFlaskBackend = (croppedDataURL,endpoint)=> {
   });
 }
 
-const cropAndSendImage = (input,endpoint=null,socket=null)=> {
+//read an image from input and crops it then it can
+//send it via the fetch or socketio
+const cropAndSendImage = (input,endpoint=null,socket=null,args=null)=> {
   const file = input.files[0];
   // Check if a file is selected
   if (file) {
@@ -48,7 +51,7 @@ const cropAndSendImage = (input,endpoint=null,socket=null)=> {
           sendToFlaskBackend(croppedDataURL,endpoint);
         }
         else if (socket && !endpoint){
-          socketio.emit(socket,{"imageData":croppedDataURL});
+          socketio.emit(socket,{"imageData":croppedDataURL,args:args});
         }
       };
     };
@@ -56,30 +59,33 @@ const cropAndSendImage = (input,endpoint=null,socket=null)=> {
 }
 
 
-
-const handleImage = () => {
+//first hold the selected profile image 
+//and first crops it then submit it
+const changeProfileImage = () => {
   const input = document.getElementById('img-input');
   const preview = document.getElementById('prof-img');
   const form = document.getElementById('upload-prof-img');
   
-  cropAndSendImage(input,"/vws/profile");
-  
-  if (input.files && input.files[0]) {
-    // console.log(cropImage(input))
+  cropAndSendImage(input,"/vws/profile",null);
+  input.value = ""; 
+  // if (input.files && input.files[0]) {
     // Submit the form programmatically after selecting the image
     // form.submit();
-    let pF = document.forms["change-password-form"];
-    let nF = document.forms["change-name-form"];
-    pF["password1"].value = ""  
-    pF["password2"].value = ""  
-    pF["password3"].value = ""  
-    nF["name"].value = ""  
-
-  }
+    // let pF = document.forms["change-password-form"];
+    // let nF = document.forms["change-name-form"];
+    // pF["password1"].value = ""  
+    // pF["password2"].value = ""  
+    // pF["password3"].value = ""  
+    // nF["name"].value = ""  
+  // }
 }
 
+//(regex) checkes if a str starts with a digit e.g in name
 const startsWithdigit = (str)=>/^[0-9].+/.test(str);
-const validatePasswordFormat = (pwd)=>/^(?=(.*\d){2,})(?=(.*[a-z]){3,})(?=(.*[A-Z]){1,})(?=(.*\W){1,}).{6,12}$/.test(pwd);
+//this validates a password if it follows a give rule;
+//atleast 2 digits, 3 lower case letters, 1 upper case letter, atleast 1 symbol
+//and min length of 7 and max of 12
+const validatePasswordFormat = (pwd)=>/^(?=(.*\d){2,})(?=(.*[a-z]){3,})(?=(.*[A-Z]){1,})(?=(.*\W){1,}).{7,12}$/.test(pwd);
 
 if (document.title == "profile"){
   document.addEventListener("DOMContentLoaded", function(){
@@ -101,46 +107,11 @@ if (document.title == "profile"){
       nameToast.hide();
     });
   });
-  // const handleImage = () => {
-  //   const input = document.getElementById('img-input');
-  //   const preview = document.getElementById('prof-img');
-  //   const form = document.getElementById('upload-prof-img');
-  //   form.submit();
-    // if (input.files && input.files[0]) {
-    //   const reader = new FileReader();
-    //
-    //   reader.onload = function (e) {
-    //     preview.src = e.target.result;
-    //   };
-    //
-    //   reader.readAsDataURL(input.files[0]);
-    //
-    //   // Submit the form programmatically after selecting the image
-    //   form.submit();
-    // }
-  // }
-  // document.getElementById("img-input").addEventListener("onchange",()=>{
-  //   handleImage()
-  //   console.log("imga")
-  // })
-}
-
-if (document.title == "room"){
-    // Custom JavaScript to expand the text area
-  messageInput.addEventListener("input", (e)=>{
-      if (e.target && e.target.nodeName === "TEXTAREA") {
-          autoExpand(e.target);
-      }
-  });
-    
-  function autoExpand(textarea) {
-      // textarea.style.height = "10px";
-      textarea.style.height = (textarea.scrollHeight) + "px";
-      textarea.style.maxHeight = "100px"
-  };
 }
 
 
+
+//used to display error and success message to data input form
 const flash = (node,message,position='after')=>{
   var error_node = document.createElement("span");
   error_node.style.color = "red"
@@ -156,6 +127,7 @@ const flash = (node,message,position='after')=>{
   }
 }
 
+//validates if create form input data is in corrent format before submitting
 const validateCreateForm = () => {
   let form = document.forms["create-form"];
   
@@ -180,6 +152,8 @@ const validateCreateForm = () => {
   }
 }
 
+//validates if login input data is in corrent format before
+//even checking if the user exists
 const validateLoginForm = ()=>{
   let form = document.forms["login-form"];
   
@@ -193,6 +167,7 @@ const validateLoginForm = ()=>{
   }
 }
 
+//validates change name form in profile before submittion
 const validateChangeNameForm = ()=>{
   let changNameForm = document.forms["change-name-form"];
   let userName = changNameForm["name"];
@@ -210,7 +185,7 @@ const validateChangeNameForm = ()=>{
     return false
   }
 }
-
+//validates change password form in profile before submittion
 const validateChangePasswordForm = ()=>{
   let passwordForm = document.forms["change-password-form"];
   if (!validatePasswordFormat(passwordForm["password2"].value)){
@@ -234,6 +209,7 @@ if (document.title == "create" || document.title == "login" || document.title ==
   }
 }
 
+//enters the user into the room
 const EnterChatRoom = (chatsSection,chatRoomSection)=>{
   let roomBtns = document.getElementsByClassName("enter");
   for (let roomBtn of roomBtns){
@@ -249,20 +225,21 @@ const EnterChatRoom = (chatsSection,chatRoomSection)=>{
   }
 }
 
+//gets the user out of the room
 const ExitChatRoom = (chatsSection,chatRoomSection)=>{
   document.getElementById("exit-room").addEventListener("click",()=>{
     chatsSection.style.display = "block";
     chatRoomSection.style.display = "none";
-    // document.getElementById("messages").innerHTML = " ";
   })
 }
-
+//sends the message to the backend to be saved and clears message input box
 const sendMessage = (msgInput,room,sender_id) =>{
  socketio.emit("message",{message : msgInput.value,room : room ,sender_id: sender_id});
   msgInput.value = "";
 
 }
 
+//displays messages in the room
 const displayMessage = (messageDiv,msgContainer,message,time,direction,sender_img=null)=>{
   if (message){
     if (direction == "right"){
@@ -295,6 +272,7 @@ const displayMessage = (messageDiv,msgContainer,message,time,direction,sender_im
   }
 }
 
+//constructs the structre of your newly created card
 const yourRoom = (name,moto,photo=null)=>{
   return `
     <div class="dropdown">
@@ -316,12 +294,12 @@ const yourRoom = (name,moto,photo=null)=>{
 }
 
 
-const createYourRoomCard = (roomName,roomMoto,n)=>{
+const createYourRoomCard = (roomName,roomMoto,imgObj)=>{
   let yourRoomsSection = document.getElementById("your-rooms");
   let yourRoomElem = document.createElement("div");
   yourRoomElem.setAttribute("class","card d-flex pt-0 pb-0 room-card")
   yourRoomElem.style.border = "1px solid green"
-  yourRoomElem.innerHTML = yourRoom(roomName,roomMoto,n.imageData);
+  yourRoomElem.innerHTML = yourRoom(roomName,roomMoto,imgObj.imageData);
   yourRoomsSection.appendChild(yourRoomElem);
   
   for (let settingBtn of yourRoomElem.querySelectorAll("div ul li button")){
@@ -342,17 +320,6 @@ if (document.title == "dashboard"){
   let chatsSection = document.getElementById("chats-display");
   let chatRoomSection = document.getElementById("chat-room");
   
-  // const EnterChatRoom = (value,chatsSection=chatsSection,chatRoomSection=chatRoomSection)=>{
-  //     socketio.emit("join",{room : roomBtn.value})
-  //     document.getElementById("room-title").innerText = value
-  //     socketio.on("get_room_messages",(roomMsgs)=>{
-  //       chatsSection.style.display = "none";
-  //       chatRoomSection.style.display = "block";
-  //       console.log(roomMsgs)
-  //     })
-  //   }
-  // }
-
   let createRoomBtn = document.getElementById("create-btn");
   let createRoomToastElement = document.getElementById("create-room-toast");
 
@@ -371,13 +338,13 @@ if (document.title == "dashboard"){
     let roomImageInput = form["room-image"]
     if (roomName && roomMoto){
       socketio.emit("create_room",{name:roomName,moto: roomMoto});
-      cropAndSendImage(roomImageInput,null,"test")
+      cropAndSendImage(roomImageInput,null,"test",[roomName])
       socketio.on("confirm_room_exists",(res)=>{
         console.log(res)
         console.log(typeof res)
         if (!res){
-          socketio.on("room_img",(n)=>{
-            createYourRoomCard(roomName,roomMoto,n);
+          socketio.on("room_img",(imgObj)=>{
+            createYourRoomCard(roomName,roomMoto,imgObj);
             clearForm(form);
             createRoomToast.hide();
           })
@@ -449,3 +416,19 @@ const deleteRoom = (roomId)=> {
     window.location.href = "/vws/dashboard";
   });
 }
+
+
+// if (document.title == "room"){
+//     // Custom JavaScript to expand the text area
+//   messageInput.addEventListener("input", (e)=>{
+//       if (e.target && e.target.nodeName === "TEXTAREA") {
+//           autoExpand(e.target);
+//       }
+//   });
+//     
+//   function autoExpand(textarea) {
+//       // textarea.style.height = "10px";
+//       textarea.style.height = (textarea.scrollHeight) + "px";6
+//       textarea.style.maxHeight = "100px"
+//   };
+// }

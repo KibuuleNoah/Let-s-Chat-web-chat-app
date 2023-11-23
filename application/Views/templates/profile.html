@@ -13,8 +13,8 @@
     <div class="d-flex justify-content-center">
       <form id="upload-prof-img" name="upload-prof-img" method="POST" enctype="multipart/form-data">
         <label for="img-input">
-          <img id="prof-img" name="prof-img" class="img-fluid" src="{{ img }}" style="border: 3px solid green;border-radius: 50%;" alt="" width="200" height="200">
-          <input type="file" id="img-input" name="img-input" style="display:none;" onchange="handleImage();">
+          <img id="prof-img" name="prof-img" class="img-fluid" src="data:image/png;base64,{{ img_data }}" style="border: 3px solid green;border-radius: 50%;" alt="" width="200" height="200">
+          <input type="file" id="img-input" name="img-input" style="display:none;" onchange="changeProfileImage();">
         </label>
       </form>
     </div>

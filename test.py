@@ -7,6 +7,38 @@
 # n, a = d.values()
 # print(n, a)
 
-l1 = [3, 3, 6, 8, 7, 9, 2]
-l2 = [[1, 1]]
-print([3, 8] in l1)
+# l1 = [3, 3, 6, 8, 7, 9, 2]
+# l2 = [[1, 1]]
+# print([3, 8] in l1)
+import base64
+
+from sqlalchemy.event import base
+
+#
+
+
+def convert_to_base64(data):
+    return base64.b64encode(data)
+
+
+def convert_to_bytes(data):
+    return base64.b64decode(data)
+
+
+with open("./application/static/imgs/room.png", "rb") as f, open(
+    "room.bin", "wb"
+) as f2:
+    f2.write(f.read())
+    # a = convert_to_base64(f)
+    # b = convert_to_bytes(a)
+    # print(f)
+
+#
+# # b = base64.b64encode(f.read())
+# # n = base64.b64decode(f.read())
+# # f2.write(f.read())
+#
+# try:
+#     5 / 0
+# except:
+#     raise NotImplementedError("yoooo")

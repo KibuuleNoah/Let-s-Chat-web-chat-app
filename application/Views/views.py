@@ -2,23 +2,18 @@ from flask import json, render_template, request, url_for, Blueprint, flash, jso
 from flask_login import current_user
 from flask_login import login_required
 from werkzeug.security import check_password_hash, generate_password_hash
+
+from ..functions.main import convert_to_base64, convert_to_bytes
 from ..Models.models import Room, User, db
-import string, base64
+import string
 
 views = Blueprint("views", __name__, template_folder="templates", url_prefix="/vws")
-
-user = {
-    "photo": "imgs/image.jpg",
-    "name": "Kibuule Noah",
-    "freinds": 578,
-    "num_messages": 790,
-}
 
 
 # gets current user id and returns the user image
 def get_user_img(id_):
     user = User.query.get(id_)
-    return user.photo.decode()
+    return convert_to_base64(user.photo)
 
 
 # update user name
@@ -50,12 +45,13 @@ def update_room_info(room_id, new_name, new_image):
     if room.creater_id == current_user.id:
         print("update allowed")
         if new_name:
-            # Room.query.filter_by(id=room_id).update({Room.room_name: new_name})
-            # db.session.commit
-            print("updating room name")
+            Room.query.filter_by(id=room_id).update({Room.room_name: new_name})
+            db.session.commit()
+            print("updating room name from", room.room_name, " to ", new_name)
         if new_image:
-            # Room.query.filter_by(id=room_id).update({Room.image: new_image})
-            # db.session.commit()
+            new_image = convert_to_bytes(new_image.split(",", 1)[-1])
+            Room.query.filter_by(id=room_id).update({Room.image: new_image})
+            db.session.commit()
             print("updating room image")
 
 
@@ -75,7 +71,7 @@ def dashboard():
         user_name=current_user.name,
         your_rooms=your_rooms,
         other_rooms=other_rooms,
-        img=user_img,
+        img_data=user_img,
     )
 
 
@@ -83,7 +79,7 @@ def dashboard():
 @views.route("/profile", methods=["GET", "POST"])
 @login_required
 def profile():
-    user_img = get_user_img(current_user.id)
+    user_img_data = get_user_img(current_user.id)
     # print(user_img, "image data")
     if request.method == "POST":
         data = request.get_json()
@@ -98,16 +94,15 @@ def profile():
             update_user_password(old_password, new_password)
 
         # fetches newly uploaded image
-        prof_img = request.files.get("img-input")
+        # prof_img = request.files.get("img-input")
         if image_data:
+            image_data = convert_to_bytes(image_data.split(",", 1)[-1])
             # updates user photo
-            User.query.filter_by(id=current_user.id).update(
-                {User.photo: image_data.encode()}
-            )
+            User.query.filter_by(id=current_user.id).update({User.photo: image_data})
             db.session.commit()
         return jsonify({"message": "Image uploaded successfully"})
 
-    return render_template("profile.html", user=current_user, img=user_img)
+    return render_template("profile.html", user=current_user, img_data=user_img_data)
 
 
 # settings route for rendering settings page
@@ -117,6 +112,7 @@ def settings(room_id):
     if request.method == "POST":
         new_room_name = request.form.get("room-name")
         new_room_image = request.files.get("room-image")
+        print(new_room_name)
         update_room_info(int(room_id), new_room_name, new_room_image)
     return render_template("settings.html")
 
@@ -133,6 +129,11 @@ def delete_room():
         db.session.commit()
 
     return jsonify({})
+
+
+@views.app_template_filter("to_base64")
+def to_base64(s):
+    return convert_to_base64(s)
 
 
 # @views.route("/upload", methods=["POST"])

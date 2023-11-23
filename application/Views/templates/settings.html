@@ -18,7 +18,7 @@
   <hr class="text-info">
 
   <!-- Form for updating room name -->
-  <form method="POST" name="update-room" enctype="multipart/form-data">
+  <form method="POST" id="update-room-form" name="update-room" enctype="multipart/form-data">
     <div class="form-group">
       <label for="room-name">Room Name</label>
       <input type="text" class="form-control" id="room-name" name="room-name" placeholder="Enter new room name" disabled>
@@ -31,7 +31,7 @@
     </div>
 
     <!-- Button to submit the form -->
-    <button type="submit" class="btn btn-primary mt-2">Update</button>
+    <button id="update-btn" class="btn btn-primary mt-2" onclick="submitroomupdates()">Update</button>
   </form>
 </div>
 
@@ -44,5 +44,11 @@
     document.getElementById('roomImageCheckbox').addEventListener('change', function() {
         document.getElementById('room-image').disabled = !this.checked;
     });
+
+    const submitroomupdates = ()=>{
+      document.getElementById("update-room-form").submit()
+      window.location.href = "/vws/dashboard";
+
+    }
 </script>
 {% endblock %}
