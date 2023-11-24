@@ -9,7 +9,7 @@ class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(30), unique=True, nullable=False)
     password = db.Column(db.String(100), nullable=False)
-    photo = db.Column(db.String, nullable=False, default="./default1.jpg")
+    photo = db.Column(db.LargeBinary, nullable=False)
     joined = db.Column(
         db.DateTime(timezone=True), nullable=False, default=datetime.utcnow
     )
@@ -32,7 +32,7 @@ class Room(db.Model):
     room_name = db.Column(db.String(15), nullable=False, unique=True)
     room_moto = db.Column(db.String, nullable=False)
     creater_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
-    # image = db.Column(db.LargeBinary, nullable=False, default="default2.jpg")
+    image = db.Column(db.LargeBinary, nullable=False)
     create_date_time = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     num_clients = db.Column(db.Integer, nullable=False, default=0)
     messages = db.relationship("Message")

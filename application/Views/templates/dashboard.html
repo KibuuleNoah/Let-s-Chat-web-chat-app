@@ -9,8 +9,8 @@
     <div class="container d-flex flex-column"> 
         <div class="align-self-end">  
           <nav class="nav flex-column p-1 m-1"> 
-            <a class="nav-link active fs-2 pb-0 mb-0" aria-current="page" href="#"><img src="imgs/image.jpg" alt="" class="h-img"></a> 
-            <a class="nav-link pt-0 mt-0" href="#">{{user_name}}</a> 
+            <a class="nav-link active fs-2 pb-0 mb-0"href="/vws/profile"><img src="data:image/png;base64, {{img_data}}" alt="" class="h-img"></a> 
+            <a class="nav-link pt-0 mt-0" href="/vws/profile">{{user_name}}</a> 
           </nav> 
         </div> 
     </div> 
@@ -50,23 +50,24 @@
      </div> 
    </div> 
    <section id="your-rooms">
-     <h2 style="margin-top:60px">Your Room</h2>
+     <h2 class="text-success" style="margin-top:60px;">Your Rooms</h2>
      {% if your_rooms %}
      {% for room in your_rooms %}
       {{your_room(room)}}
      {% endfor %} 
      {% else %}
-       <h1 align="center">No rooms yet</h1>
+       <h3 class="opacity-50" align="center">No rooms yet</h3>
      {% endif %}
   </section>
+  <hr class="text-info">
   <section id="other-rooms">
-     <h2>Other Available Rooms</h2>  
+     <h2 class="text-warning">Other Available Rooms</h2>  
      {% if other_rooms %}
      {% for room in other_rooms %}
       {{other_room(room)}}
      {% endfor %} 
      {% else %}
-       <h1 align="center">No rooms yet</h1>
+       <h3 class="opacity-50" align="center">No rooms yet</h3>
      {% endif %}
   </section> 
 

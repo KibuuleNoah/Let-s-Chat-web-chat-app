@@ -1,0 +1,69 @@
+{% extends "base.html"%}
+{% block content %}
+<div class="container mt-5">
+  <h2 class="mb-4 text-warning">Chat Room Settings</h2>
+
+  <!-- Checkboxes to control form-group visibility -->
+  <hr class="text-info">
+  <i class="text-info"><u><h5>Select Update Area</h5></u></i>
+  <div class="form-check form-check-inline">
+    <input type="checkbox" class="form-check-input" id="roomNameCheckbox">
+    <label class="form-check-label" for="roomNameCheckbox">Room Name</label>
+  </div>
+  
+  <div class="form-check form-check-inline">
+    <input type="checkbox" class="form-check-input" id="roomMotoCheckbox">
+    <label class="form-check-label" for="roomMotoCheckbox">Room Moto</label>
+  </div>
+
+  <div class="form-check form-check-inline">
+    <input type="checkbox" class="form-check-input" id="roomImageCheckbox">
+    <label class="form-check-label" for="roomImageCheckbox">Room Image</label>
+  </div>
+  <hr class="text-info">
+
+  <!-- Form for updating room name -->
+  <form method="POST" id="update-room-form" name="update-room" enctype="multipart/form-data">
+    <div class="form-group">
+      <label for="room-name">Room Name</label>
+      <input type="text" class="form-control" id="room-name" name="room-name" placeholder="Enter new room name" disabled>
+    </div>
+    <!--Form for updating room moto-->
+    <div class="form-group">
+      <label for="room-moto">Room Moto</label>
+      <input type="text" class="form-control" id="room-moto" name="room-moto" placeholder="Enter new room moto" disabled>
+    </div>
+    
+    <!-- Form for updating room image -->
+    <div class="form-group">
+        <label for="room-image">Room Image URL</label>
+        <input type="file" class="form-control" id="room-image" name="room-image" placeholder="Enter URL for new room image" disabled>
+    </div>
+
+    <!-- Button to submit the form -->
+    <button type="button" id="update-btn" class="btn btn-primary mt-2" onclick="submitRoomUpdates()">Update</button>
+  </form>
+</div>
+
+<!-- JavaScript to toggle form-group visibility -->
+<script>
+    document.getElementById('roomNameCheckbox').addEventListener('change', function() {
+        document.getElementById('room-name').disabled = !this.checked;
+    });
+    
+    document.getElementById('roomMotoCheckbox').addEventListener('change', function() {
+        document.getElementById('room-moto').disabled = !this.checked;
+    });
+
+    document.getElementById('roomImageCheckbox').addEventListener('change', function() {
+        document.getElementById('room-image').disabled = !this.checked;
+    });
+
+    //const submitRoomUpdates = ()=>{
+      //document.getElementById("update-room-form").submit()
+      
+      //window.location.href = "/vws/dashboard";
+
+   // }
+</script>
+{% endblock %}

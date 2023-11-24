@@ -2,15 +2,34 @@ from flask import request
 from flask_socketio import SocketIO, emit, join_room
 from application import create_app
 from flask_login import current_user
+from application.Views.views import get_user_img
 from application.Models.models import User, Message, Room, db
+from application.functions.main import convert_to_bytes, convert_to_base64
 from time import strftime
 import time
 
-# from application.Auth.auth import models
-
+joined_users = set()
 
 app = create_app()
 socketio = SocketIO(app)
+
+
+def save_message(msg, sender_id, room_id):
+    new_msg = Message(message=msg, sender_id=sender_id, room_id=room_id)
+    db.session.add(new_msg)
+    db.session.commit()
+
+
+def create_room_now(name, moto, image_data):
+    new_room = Room(
+        room_name=name,
+        room_moto=moto,
+        creater_id=current_user.id,
+        image=image_data,
+    )
+
+    db.session.add(new_room)
+    db.session.commit()
 
 
 @socketio.on("connect")
@@ -20,31 +39,42 @@ def connection():
 
 @socketio.on("join")
 def handle_join_one(roomObj):
-    # id = current_user.id
+    room = Room.query.filter_by(room_name=roomObj["room"]).first()
+    room_msgs = room.messages
+    print([[msgobj.sender_id, msgobj.message, msgobj.id] for msgobj in room_msgs])
     sid = request.sid
     join_room(roomObj["room"])
     print(sid, "joined -> ", roomObj["room"])
     emit("send_ids", {"user_id": current_user.id, "room": roomObj["room"]})
+    emit(
+        "get_room_messages",
+        [
+            [
+                # get sender image by using the sender id
+                get_user_img(msgobj.sender_id),
+                msgobj.sender_id,
+                msgobj.message,
+            ]
+            for msgobj in room_msgs
+        ],
+    )
 
 
-def save_message(msg, sender_id, room):
-    print("saving to the database")
-    print(msg, sender_id, room)
-
-
+# endpoint for creating a room
 @socketio.on("create_room")
 def create_room(roomObj):
-    room, moto, image = roomObj.values()
+    room_name, moto = roomObj.values()
+    print(room_name, moto, end="\n")
     rooms = [rm.room_name for rm in Room.query.all() if rm]
     print(f"rooms: \n{rooms}\n")
-    if room in rooms:
+    if room_name in rooms:
         emit("confirm_room_exists", True)
-    rooms.append(room)
-    # save created room to the database
-    new_room = Room(room_name=room, room_moto=moto, creater_id=current_user.id)
-    db.session.add(new_room)
-    db.session.commit()
     emit("confirm_room_exists", False)
+    rooms.append(room_name)
+    with open("room.bin", "rb") as image:
+        image_data = image.read()
+    # save created room to the database
+    create_room_now(room_name, moto, image_data)
 
 
 @socketio.on("message")
@@ -55,11 +85,23 @@ def handle_messsage(msgObj):
     curr_time = strftime("%I:%M:%S %p")
     room_data = Room.query.filter_by(room_name=room).first()
     # save message to the database
-    new_msg = Message(message=msg, sender_id=sender_id, room_id=room_data.id)
-    db.session.add(new_msg)
-    db.session.commit()
+    save_message(msg, sender_id, room_data.id)
+    # new_msg = Message(message=msg, sender_id=sender_id, room_id=room_data.id)
+    # db.session.add(new_msg)
+    # db.session.commit()
     msgObj = {"message": msg, "id": curr_usr_id, "time": curr_time}
     emit("message", msgObj, broadcast=True, room=room)
+
+
+@socketio.on("bounce-save")
+def bounce_save(data):
+    print("receiving .......")
+    image_data = convert_to_bytes(data["imageData"].split(",", 1)[-1].encode())
+    Room.query.filter_by(room_name=data["args"][0]).update({Room.image: image_data})
+    db.session.commit()
+    print("emittinig.......")
+    emit("room_img", {"imageData": data["imageData"]})
+    print("emitted")
 
 
 if __name__ == "__main__":
