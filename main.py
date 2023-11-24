@@ -40,22 +40,29 @@ def connection():
 @socketio.on("join")
 def handle_join_one(roomObj):
     room = Room.query.filter_by(room_name=roomObj["room"]).first()
+
+    # Alternatively, using filter_by method and order_by method
+    # room = YourModel.query.filter_by(sender_id=sender_id_to_filter)\
+    # .order_by(YourModel.message_id).all()
     room_msgs = room.messages
-    print([[msgobj.sender_id, msgobj.message, msgobj.id] for msgobj in room_msgs])
+    print([[msgobj.id, msgobj.message, msgobj.sender_id] for msgobj in room_msgs])
     sid = request.sid
     join_room(roomObj["room"])
     print(sid, "joined -> ", roomObj["room"])
     emit("send_ids", {"user_id": current_user.id, "room": roomObj["room"]})
     emit(
         "get_room_messages",
-        [
+        sorted(
             [
-                # get sender image by using the sender id
-                msgobj.sender_id,
-                msgobj.message,
+                [
+                    # get sender image by using the sender id
+                    msgobj.id,
+                    msgobj.sender_id,
+                    msgobj.message,
+                ]
+                for msgobj in room_msgs
             ]
-            for msgobj in room_msgs
-        ],
+        ),
     )
 
 

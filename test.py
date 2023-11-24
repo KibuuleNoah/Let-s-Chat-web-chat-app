@@ -12,26 +12,12 @@
 # print([3, 8] in l1)
 import base64
 
-from sqlalchemy.event import base
+# from sqlalchemy.event import base
 
 #
-
-
-def convert_to_base64(data):
-    return base64.b64encode(data)
-
-
-def convert_to_bytes(data):
-    return base64.b64decode(data)
-
-
-with open("./application/static/imgs/room.png", "rb") as f, open(
-    "room.bin", "wb"
-) as f2:
-    f2.write(f.read())
-    # a = convert_to_base64(f)
-    # b = convert_to_bytes(a)
-    # print(f)
+# a = convert_to_base64(f)
+# b = convert_to_bytes(a)
+# print(f)
 
 #
 # # b = base64.b64encode(f.read())
@@ -42,3 +28,7 @@ with open("./application/static/imgs/room.png", "rb") as f, open(
 #     5 / 0
 # except:
 #     raise NotImplementedError("yoooo")
+
+l = [[1, 2, 3], [7, 5, 2], [0, 5, 8]]
+
+print(sorted(l))

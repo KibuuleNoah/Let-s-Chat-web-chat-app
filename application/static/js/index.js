@@ -227,7 +227,7 @@ const EnterChatRoom = (chatsSection,chatRoomSection)=>{
       socketio.on("get_room_messages",(roomMsgs)=>{
         chatsSection.style.display = "none";
         chatRoomSection.style.display = "block";
-        console.log(roomMsgs)
+        // console.log(roomMsgs)
       })
     })
   }
@@ -236,8 +236,9 @@ const EnterChatRoom = (chatsSection,chatRoomSection)=>{
 //gets the user out of the room
 const ExitChatRoom = (chatsSection,chatRoomSection)=>{
   document.getElementById("exit-room").addEventListener("click",()=>{
-    chatsSection.style.display = "block";
-    chatRoomSection.style.display = "none";
+    // chatsSection.style.display = "block";
+    // chatRoomSection.style.display = "none";
+    window.location.href = "/vws/dashboard"
   })
 }
 //sends the message to the backend to be saved and clears message input box
@@ -259,17 +260,17 @@ const displayMessage = (messageDiv,msgContainer,message,time,direction,sender_id
       </div>
       `;
       msgContainer.appendChild(messageDiv);
-      console.log("append the message");
+      // console.log("append the message");
     }
     else{
       socketio.emit("get_msg_sender_info",sender_id);
       socketio.on("get_msg_sender_info",(infoObj)=>{
-
+        // console.log(infoObj.photo)
         messageDiv.setAttribute("class","card mb-3 pb-0 ml-0");
         messageDiv.innerHTML = `
-        <div class="card-header d-flex">
-          <img src="data:image/png;base64,${infoObj.photo}" class="card-img-top align-self-start" alt="..." style="width:30px;height:30px;border-radius:50%;">
-          <span class="m-15">${infoObj.name}</span>
+        <div class="card-header d-flex flex-column">
+          <img src="data:image/png;base64,${infoObj.photo}" class="card-img-top align-self-start" alt="..." style="width:32px;height:30px;border-radius:50%;">
+          <small class="m-15 align-self-end">${infoObj.name.replace(/\s+/g,"_")}</small>
         </div>
         <div class="card-body pb-0">
           <p class="card-text mb-0 pb-0">${message}</p>
@@ -418,10 +419,13 @@ if (document.title == "dashboard"){
     socketio.on("get_room_messages",(roomMsgs)=>{
       for (let msgobj of roomMsgs){
         let messageDiv2 = document.createElement("div");
-        let sender_id = msgobj[0];
-        let msg = msgobj[1];
+        let sender_id = msgobj[1];
+        let msg = msgobj[2];
+        console.log(sender_id)
         // console.log(msgobj[0])
         let time = "coming";
+        let direction = giveMessageDirection(sender_id,userId);
+        console.log(direction,msg)
         // socketio.emit("get_msg_sender_info",sender_id);
 
         displayMessage(messageDiv2,msgContainer,msg,time,direction,sender_id);
