@@ -58,6 +58,13 @@ const cropAndSendImage = (input,endpoint=null,socket=null,args=null)=> {
   }
 }
 
+const submitRoomUpdates = ()=>{
+  let input = document.getElementById("room-image");
+  cropAndSendImage(input,window.location.pathname);
+  document.getElementById("update-room-form").submit()
+      
+  // window.location.href = "/vws/dashboard";
+}
 
 //first hold the selected profile image 
 //and first crops it then submit it
@@ -216,6 +223,7 @@ const EnterChatRoom = (chatsSection,chatRoomSection)=>{
     roomBtn.addEventListener("click",()=>{
       socketio.emit("join",{room : roomBtn.value})
       document.getElementById("room-title").innerText = roomBtn.value
+      document.getElementById("room-nav-img").src = roomBtn.parentNode.previousSibling.previousSibling.src
       socketio.on("get_room_messages",(roomMsgs)=>{
         chatsSection.style.display = "none";
         chatRoomSection.style.display = "block";
@@ -338,18 +346,20 @@ if (document.title == "dashboard"){
     let roomImageInput = form["room-image"]
     if (roomName && roomMoto){
       socketio.emit("create_room",{name:roomName,moto: roomMoto});
-      cropAndSendImage(roomImageInput,null,"test",[roomName])
+      cropAndSendImage(roomImageInput,null,"bounce-save",[roomName])
       socketio.on("confirm_room_exists",(res)=>{
         console.log(res)
         console.log(typeof res)
         if (!res){
           socketio.on("room_img",(imgObj)=>{
+            console.log(imgObj)
             createYourRoomCard(roomName,roomMoto,imgObj);
+            console.log("created")
             clearForm(form);
             createRoomToast.hide();
           })
           // createYourRoomCard(roomName,roomMoto);
-          // clearForm(form);
+          // clearForm(form3;
           // createRoomToast.hide();
         }
         else{

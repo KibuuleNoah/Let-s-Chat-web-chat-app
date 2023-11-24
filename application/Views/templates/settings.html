@@ -12,6 +12,11 @@
   </div>
   
   <div class="form-check form-check-inline">
+    <input type="checkbox" class="form-check-input" id="roomMotoCheckbox">
+    <label class="form-check-label" for="roomMotoCheckbox">Room Moto</label>
+  </div>
+
+  <div class="form-check form-check-inline">
     <input type="checkbox" class="form-check-input" id="roomImageCheckbox">
     <label class="form-check-label" for="roomImageCheckbox">Room Image</label>
   </div>
@@ -23,7 +28,12 @@
       <label for="room-name">Room Name</label>
       <input type="text" class="form-control" id="room-name" name="room-name" placeholder="Enter new room name" disabled>
     </div>
-
+    <!--Form for updating room moto-->
+    <div class="form-group">
+      <label for="room-moto">Room Moto</label>
+      <input type="text" class="form-control" id="room-moto" name="room-moto" placeholder="Enter new room moto" disabled>
+    </div>
+    
     <!-- Form for updating room image -->
     <div class="form-group">
         <label for="room-image">Room Image URL</label>
@@ -31,7 +41,7 @@
     </div>
 
     <!-- Button to submit the form -->
-    <button id="update-btn" class="btn btn-primary mt-2" onclick="submitroomupdates()">Update</button>
+    <button type="button" id="update-btn" class="btn btn-primary mt-2" onclick="submitRoomUpdates()">Update</button>
   </form>
 </div>
 
@@ -40,15 +50,20 @@
     document.getElementById('roomNameCheckbox').addEventListener('change', function() {
         document.getElementById('room-name').disabled = !this.checked;
     });
+    
+    document.getElementById('roomMotoCheckbox').addEventListener('change', function() {
+        document.getElementById('room-moto').disabled = !this.checked;
+    });
 
     document.getElementById('roomImageCheckbox').addEventListener('change', function() {
         document.getElementById('room-image').disabled = !this.checked;
     });
 
-    const submitroomupdates = ()=>{
-      document.getElementById("update-room-form").submit()
-      window.location.href = "/vws/dashboard";
+    //const submitRoomUpdates = ()=>{
+      //document.getElementById("update-room-form").submit()
+      
+      //window.location.href = "/vws/dashboard";
 
-    }
+   // }
 </script>
 {% endblock %}

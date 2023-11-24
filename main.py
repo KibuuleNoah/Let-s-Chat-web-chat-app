@@ -75,15 +75,6 @@ def create_room(roomObj):
         image_data = image.read()
     # save created room to the database
     create_room_now(room_name, moto, image_data)
-    # new_room = Room(
-    #     room_name=room,
-    #     room_moto=moto,
-    #     creater_id=current_user.id,
-    #     image=image_data,
-    # )
-    #
-    # db.session.add(new_room)
-    # db.session.commit()
 
 
 @socketio.on("message")
@@ -103,11 +94,14 @@ def handle_messsage(msgObj):
 
 
 @socketio.on("bounce-save")
-def test(data):
-    image_data = convert_to_base64(data["imageData"].split(",", 1)[-1])
+def bounce_save(data):
+    print("receiving .......")
+    image_data = convert_to_bytes(data["imageData"].split(",", 1)[-1].encode())
     Room.query.filter_by(room_name=data["args"][0]).update({Room.image: image_data})
     db.session.commit()
+    print("emittinig.......")
     emit("room_img", {"imageData": data["imageData"]})
+    print("emitted")
 
 
 if __name__ == "__main__":

@@ -40,19 +40,26 @@ def update_user_password(old_password, new_password):
 
 
 # updates room info like name and image
-def update_room_info(room_id, new_name, new_image):
+def update_room_info(room_id, new_name, new_moto, new_image):
     room = Room.query.get(room_id)
+    # Room_ = Room.query.filter_by(id=room_id)
+    # .update({Room.room_name: new_name})
     if room.creater_id == current_user.id:
         print("update allowed")
         if new_name:
             Room.query.filter_by(id=room_id).update({Room.room_name: new_name})
             db.session.commit()
-            print("updating room name from", room.room_name, " to ", new_name)
+        if new_moto:
+            Room.query.filter_by(id=room_id).update({Room.room_moto: new_moto})
+            db.session.commit()
         if new_image:
-            new_image = convert_to_bytes(new_image.split(",", 1)[-1])
+            # new_image = convert_to_bytes(new_image.read())
+            print(new_image, "DATADATA")
             Room.query.filter_by(id=room_id).update({Room.image: new_image})
             db.session.commit()
             print("updating room image")
+    else:
+        flash("you can't edit rooms that are not your", category="error")
 
 
 # dashboard route
@@ -82,8 +89,9 @@ def profile():
     user_img_data = get_user_img(current_user.id)
     # print(user_img, "image data")
     if request.method == "POST":
-        data = request.get_json()
-        image_data = data.get("imageData")
+        data = request.data
+        data = json.loads(data) if data else {}
+        image_data = data.get("imageData", "")  # data.get("imageData")
 
         new_name = request.form.get("name")
         old_password = request.form.get("password")
@@ -96,11 +104,12 @@ def profile():
         # fetches newly uploaded image
         # prof_img = request.files.get("img-input")
         if image_data:
+            # print(image_data)
             image_data = convert_to_bytes(image_data.split(",", 1)[-1])
             # updates user photo
             User.query.filter_by(id=current_user.id).update({User.photo: image_data})
             db.session.commit()
-        return jsonify({"message": "Image uploaded successfully"})
+            return jsonify({"message": "Image uploaded successfully"})
 
     return render_template("profile.html", user=current_user, img_data=user_img_data)
 
@@ -110,10 +119,21 @@ def profile():
 @login_required
 def settings(room_id):
     if request.method == "POST":
-        new_room_name = request.form.get("room-name")
-        new_room_image = request.files.get("room-image")
-        print(new_room_name)
-        update_room_info(int(room_id), new_room_name, new_room_image)
+        new_room_name = request.form.get("room-name", "")
+        new_room_moto = request.form.get("room-moto", "")
+
+        print("UPDATE", new_room_name)
+        print("UPDATE", new_room_moto)
+        # new_room_image = request.files.get("room-image")
+        data = request.data
+        data = json.loads(data) if data else {}
+        new_room_image_data = data.get("imageData", "")
+        # print("Data_1: ", new_room_image_data)
+        new_room_image_bytes = convert_to_bytes(new_room_image_data.split(",", 1)[-1])
+        # print("Data_2: ", new_room_image_bytes)
+        update_room_info(
+            int(room_id), new_room_name, new_room_moto, new_room_image_bytes
+        )
     return render_template("settings.html")
 
 

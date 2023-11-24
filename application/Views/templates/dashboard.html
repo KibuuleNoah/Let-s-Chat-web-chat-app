@@ -50,23 +50,24 @@
      </div> 
    </div> 
    <section id="your-rooms">
-     <h2 style="margin-top:60px">Your Room</h2>
+     <h2 class="text-success" style="margin-top:60px;">Your Rooms</h2>
      {% if your_rooms %}
      {% for room in your_rooms %}
       {{your_room(room)}}
      {% endfor %} 
      {% else %}
-       <h1 align="center">No rooms yet</h1>
+       <h3 class="opacity-50" align="center">No rooms yet</h3>
      {% endif %}
   </section>
+  <hr class="text-info">
   <section id="other-rooms">
-     <h2>Other Available Rooms</h2>  
+     <h2 class="text-warning">Other Available Rooms</h2>  
      {% if other_rooms %}
      {% for room in other_rooms %}
       {{other_room(room)}}
      {% endfor %} 
      {% else %}
-       <h1 align="center">No rooms yet</h1>
+       <h3 class="opacity-50" align="center">No rooms yet</h3>
      {% endif %}
   </section> 
 
