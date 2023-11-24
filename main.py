@@ -51,7 +51,6 @@ def handle_join_one(roomObj):
         [
             [
                 # get sender image by using the sender id
-                get_user_img(msgobj.sender_id),
                 msgobj.sender_id,
                 msgobj.message,
             ]
@@ -91,6 +90,17 @@ def handle_messsage(msgObj):
     # db.session.commit()
     msgObj = {"message": msg, "id": curr_usr_id, "time": curr_time}
     emit("message", msgObj, broadcast=True, room=room)
+
+
+@socketio.on("get_msg_sender_info")
+def get_msg_sender_info(sender_id):
+    user = User.query.get(int(sender_id))
+    user_name = user.name
+    user_photo = convert_to_base64(user.photo)
+    emit(
+        "get_msg_sender_info",
+        {"name": user_name, "photo": user_photo},
+    )
 
 
 @socketio.on("bounce-save")
