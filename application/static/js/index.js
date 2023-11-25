@@ -325,43 +325,6 @@ const displayMessage = async (messageDiv,msgContainer,message,time,direction,sen
   }
 }
 
-//constructs the structre of your newly created card
-const yourRoom = (name,moto,photo=null)=>{
-  return `
-    <div class="dropdown">
-      <a class="text-info position-absolute top-0 end-0" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-        <i class="bi bi-three-dots-vertical fs-6"></i>
-      </a>
-
-      <ul class="dropdown-menu">
-        <li><button class="dropdown-item text-danger" value="${name}"><i class="bi bi-trash"></i> Delete</button></li>
-        <li><button class="dropdown-item text-success" value="${name}"><i class="bi bi-pen"></i> Edit</button></li>
-      </ul>
-    </div>
-    <img style="height:3rem;width:3rem;" class="h-img align-self-center pb-0 mb-0" src="${photo}" class="card-img-top" alt="..."> 
-    <div class="card-body d-flex flex-column mt-0 pt-0"> 
-      <p class="card-title sm-card-title align-self-center">${name}<sup style="color:green;">*new</sup></p> 
-      <p class="card-text">moto: ${moto}</p> 
-      <button class="btn btn-primary align-self-center sm-btn pb-0 pt-0 mb-0 mt-0 enter" value=${name}>Enter</button> 
-   </div> `
-}
-
-
-const createYourRoomCard = (roomName,roomMoto,imgObj)=>{
-  let yourRoomsSection = document.getElementById("your-rooms");
-  let yourRoomElem = document.createElement("div");
-  yourRoomElem.setAttribute("class","card d-flex pt-0 pb-0 room-card")
-  yourRoomElem.style.border = "1px solid green"
-  yourRoomElem.innerHTML = yourRoom(roomName,roomMoto,imgObj.imageData);
-  yourRoomsSection.appendChild(yourRoomElem);
-  
-  for (let settingBtn of yourRoomElem.querySelectorAll("div ul li button")){
-    settingBtn.addEventListener("click",()=>{
-      console.log(settingBtn.value)
-    })
-  }
-};
-
 const clearForm = (form)=>{
   form["room-name"].value = "";
   form["room-moto"].value = "";
@@ -398,14 +361,11 @@ if (document.title == "dashboard"){
         if (!res){
           socketio.on("room_img",(imgObj)=>{
             console.log(imgObj)
-            createYourRoomCard(roomName,roomMoto,imgObj);
+            window.location.href = "/vws/dashboard";
             console.log("created")
             clearForm(form);
             createRoomToast.hide();
           })
-          // createYourRoomCard(roomName,roomMoto);
-          // clearForm(form3;
-          // createRoomToast.hide();
         }
         else{
           clearForm(form);
@@ -451,64 +411,7 @@ if (document.title == "dashboard"){
         let time = msgobj[3]
         console.log(msg,direction,userId)
         displayMessage(messageDiv,msgContainer,msg,time,direction,sender_id)
-        // if (direction == "right"){
-        //   messageDiv.setAttribute("class",`card align-self-end mb-3 pb-0 ml-0`);
-        //   messageDiv.innerHTML = `
-        //   <div class="card-body pb-0">
-        //     <p class="card-text mb-0 pb-0">${msg}</p>
-        //     <p class="card-text m-0 p-0" style="text-align: right;"><small class="text-body-secondary">{time}</small></p>
-        //   </div>
-        //   `;
-        //   msgContainer.appendChild(messageDiv);
-        //   // console.log("append the message");
-        // }
-        // else{
-        //   // socketio.emit("get_msg_sender_info",sender_id);
-        //   // socketio.on("get_msg_sender_info",(infoObj)=>{
-        //     // console.log(infoObj.photo)
-        //   messageDiv.setAttribute("class","card mb-3 pb-0 ml-0");
-        //   messageDiv.innerHTML = `
-        //   <div class="card-header d-flex flex-column">
-        //     <img src="data:image/png;base64,{infoObj.photo}" class="card-img-top align-self-start" alt="..." style="width:32px;height:30px;border-radius:50%;">
-        //     <small class="m-15 align-self-end">{infoObj.name.replace(/\s+/g,"_")}</small>
-        //   </div>
-        //   <div class="card-body pb-0">
-        //     <p class="card-text mb-0 pb-0">${msg}</p>
-        //     <p class="card-text m-0 p-0" style="text-align: right;"><small class="text-body-secondary">{time}</small></p>
-        //
-        //   </div>
-        //   `;
-        //   msgContainer.appendChild(messageDiv);
-        //   console.log("append the message");
-        //   // })
-        // }
-        // if (direction == "left"){
-        //   let tE = document.createElement("div");
-        //   tE.className = "align-self-end"
-        //   tE.innerHTML = "<h1>nijijiu</h1>";
-        //   msgContainer.appendChild(tE)
-        // }
-        // else{
-        //   let tE = document.createElement("div");
-        //   tE.className = "align-self-start"
-        //   tE.innerHTML = "<h1>nijijiu</h1>";
-        //   msgContainer.appendChild(tE)
-        // }
       });
-      // for (let msgobj of roomMsgs){
-      //   // let msgContainer = document.getElementById("messages")
-      //   let messageDiv2 = document.createElement("div");
-      //   let sender_id = msgobj[1];
-      //   let msg = msgobj[2];
-      //   console.log(sender_id)
-      //   // console.log(msgobj[0])
-      //   let time = "coming";
-      //   let direction = giveMessageDirection(sender_id,userId);
-      //   console.log(direction,msg)
-      //   // socketio.emit("get_msg_sender_info",sender_id);
-      //
-      //   displayMessage(messageDiv2,msgContainer,msg,time,direction,sender_id);
-      // }
     })
   })
   let deletRoomBtns = document.querySelectorAll(".dropdown-item.text-danger");

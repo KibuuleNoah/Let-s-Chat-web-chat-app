@@ -143,6 +143,7 @@ def delete_room():
         request.data
     )  # this function expects a JSON from the INDEX.js file
     roomId = room["roomId"]
+    print("ROOMTOREL", roomId)
     room = Room.query.get(roomId)
     if room and (room.creater_id == current_user.id):
         db.session.delete(room)
