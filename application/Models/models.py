@@ -10,9 +10,7 @@ class User(db.Model, UserMixin):
     name = db.Column(db.String(30), unique=True, nullable=False)
     password = db.Column(db.String(100), nullable=False)
     photo = db.Column(db.LargeBinary, nullable=False)
-    joined = db.Column(
-        db.DateTime(timezone=True), nullable=False, default=datetime.utcnow
-    )
+    joined = db.Column(db.DateTime(timezone=True), nullable=False, default=datetime.now)
     messages = db.relationship("Message")
     rooms = db.relationship("Room")
 

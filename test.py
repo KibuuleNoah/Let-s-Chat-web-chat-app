@@ -12,26 +12,12 @@
 # print([3, 8] in l1)
 import base64
 
-from sqlalchemy.event import base
+# from sqlalchemy.event import base
 
 #
-
-
-def convert_to_base64(data):
-    return base64.b64encode(data)
-
-
-def convert_to_bytes(data):
-    return base64.b64decode(data)
-
-
-with open("./application/static/imgs/room.png", "rb") as f, open(
-    "room.bin", "wb"
-) as f2:
-    f2.write(f.read())
-    # a = convert_to_base64(f)
-    # b = convert_to_bytes(a)
-    # print(f)
+# a = convert_to_base64(f)
+# b = convert_to_bytes(a)
+# print(f)
 
 #
 # # b = base64.b64encode(f.read())
@@ -42,3 +28,24 @@ with open("./application/static/imgs/room.png", "rb") as f, open(
 #     5 / 0
 # except:
 #     raise NotImplementedError("yoooo")
+
+l = [[1, 2, 3], [7, 5, 2], [0, 5, 8]]
+
+import re
+
+s = "2023-11-24 12:03:11.006171"
+
+pat = r"\d{2}:\d{2}"
+mat = re.search(pat, s).group()
+
+
+def convert_24_to_12(time_str):
+    hr = int(time_str[:2])
+    conv_hr = hr - 12 if hr > 12 else (12 if hr == 0 else hr)
+    am_pm = "am" if hr < 12 else "pm"
+    return f"{conv_hr}:{time_str[3:]}{am_pm}"
+
+
+print(convert_24_to_12(mat))
+# 0-12 am
+# 12-0 pm

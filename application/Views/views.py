@@ -4,7 +4,7 @@ from flask_login import login_required
 from werkzeug.security import check_password_hash, generate_password_hash
 
 from ..functions.main import convert_to_base64, convert_to_bytes
-from ..Models.models import Room, User, db
+from ..Models.models import Message, Room, User, db
 import string
 
 views = Blueprint("views", __name__, template_folder="templates", url_prefix="/vws")
@@ -114,6 +114,11 @@ def profile():
     return render_template("profile.html", user=current_user, img_data=user_img_data)
 
 
+# db.session.execute(
+#     db.delete(Skilljoin).filter_by(staffid=30)
+#     )
+
+
 # settings route for rendering settings page
 @views.route("/settings/<room_id>", methods=["POST", "GET"])
 @login_required
@@ -143,12 +148,26 @@ def delete_room():
         request.data
     )  # this function expects a JSON from the INDEX.js file
     roomId = room["roomId"]
+    print("ROOMTOREL", roomId)
     room = Room.query.get(roomId)
+    # print(room)
     if room and (room.creater_id == current_user.id):
+        db.session.execute(db.delete(Message).filter_by(room_id=roomId))
+
         db.session.delete(room)
         db.session.commit()
-
     return jsonify({})
+
+
+@views.route("/GMSI", methods=["POST"])
+def get_msg_sender_info():
+    data = json.loads(request.data)
+    print(data)
+    sender_id = data["sender_id"]
+    user = User.query.get(sender_id)
+    user_name = user.name
+    user_photo = convert_to_base64(user.photo)
+    return jsonify({"name": user_name, "photo": user_photo})
 
 
 @views.app_template_filter("to_base64")

@@ -1,5 +1,6 @@
 from flask import request
 from flask_socketio import SocketIO, emit, join_room
+from socketio.zmq_manager import re
 from application import create_app
 from flask_login import current_user
 from application.Views.views import get_user_img
@@ -32,6 +33,18 @@ def create_room_now(name, moto, image_data):
     db.session.commit()
 
 
+def get_time_from_datetime(string):
+    print(re.search(r"\d{2}:\d{2}", str(string)).group())
+    return re.search(r"\d{2}:\d{2}", str(string)).group()
+
+
+def convert_24_to_12(time_str):
+    hr = int(time_str[:2])
+    conv_hr = hr - 12 if hr > 12 else (12 if hr == 0 else hr)
+    am_pm = "am" if hr < 12 else "pm"
+    return f"{conv_hr}:{time_str[3:]}{am_pm}"
+
+
 @socketio.on("connect")
 def connection():
     print("connected")
@@ -40,23 +53,30 @@ def connection():
 @socketio.on("join")
 def handle_join_one(roomObj):
     room = Room.query.filter_by(room_name=roomObj["room"]).first()
+
+    # Alternatively, using filter_by method and order_by method
+    # room = YourModel.query.filter_by(sender_id=sender_id_to_filter)\
+    # .order_by(YourModel.message_id).all()
     room_msgs = room.messages
-    print([[msgobj.sender_id, msgobj.message, msgobj.id] for msgobj in room_msgs])
+    print([[msgobj.id, msgobj.message, msgobj.sender_id] for msgobj in room_msgs])
     sid = request.sid
     join_room(roomObj["room"])
     print(sid, "joined -> ", roomObj["room"])
     emit("send_ids", {"user_id": current_user.id, "room": roomObj["room"]})
     emit(
         "get_room_messages",
-        [
+        sorted(
             [
-                # get sender image by using the sender id
-                get_user_img(msgobj.sender_id),
-                msgobj.sender_id,
-                msgobj.message,
+                [
+                    # get sender image by using the sender id
+                    msgobj.id,
+                    msgobj.sender_id,
+                    msgobj.message,
+                    convert_24_to_12(get_time_from_datetime(msgobj.time)),
+                ]
+                for msgobj in room_msgs
             ]
-            for msgobj in room_msgs
-        ],
+        ),
     )
 
 
@@ -91,6 +111,17 @@ def handle_messsage(msgObj):
     # db.session.commit()
     msgObj = {"message": msg, "id": curr_usr_id, "time": curr_time}
     emit("message", msgObj, broadcast=True, room=room)
+
+
+@socketio.on("get_msg_sender_info")
+def get_msg_sender_info(sender_id):
+    user = User.query.get(int(sender_id))
+    user_name = user.name
+    user_photo = convert_to_base64(user.photo)
+    emit(
+        "get_msg_sender_info",
+        {"name": user_name, "photo": user_photo},
+    )
 
 
 @socketio.on("bounce-save")
