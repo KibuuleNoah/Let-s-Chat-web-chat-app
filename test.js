@@ -80,5 +80,55 @@
 // </body>
 // </html>
 //
-let n = "kib noa tri"
-console.log(n.replace(/\s+/g,"_"))
+// let n = "kib noa tri"
+// console.log(n.replace(/\s+/g,"_"))
+//
+// const testApi = async (sender_id)=>{
+//   return await fetch(`http://127.0.0.1:5000/vws/GMSI`, {
+//       method: 'POST',
+//       headers: {
+//         'Content-Type': 'application/json',
+//       },
+//     body: JSON.stringify({ sender_id: sender_id }),
+//     })
+//     .then(response => response.json())
+//     .then(data => {
+//       return data;
+//     })
+//     .catch(error => {
+//       console.error('Error:', error);
+//   });
+// }
+//
+// // testApi(5)
+// let t = testApi(5)
+// console.log(t[""])
+
+const getMsgSenderInfo = async (sender_id)=> {
+  try {
+    const response = await fetch('http://127.0.0.1:5000/vws/GMSI', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({sender_id:sender_id}),
+    });
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+    const responseData = await response.json();
+    console.log(responseData); // You can handle or return the data as needed
+    return responseData;
+  } catch (error) {
+    console.error('Error:', error);
+  }
+}
+
+// Example usage:
+const dataToSend = {
+  // Your data here
+};
+
+getMsgSenderInfo(5);
+
+

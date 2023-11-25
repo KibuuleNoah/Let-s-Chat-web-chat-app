@@ -31,4 +31,21 @@ import base64
 
 l = [[1, 2, 3], [7, 5, 2], [0, 5, 8]]
 
-print(sorted(l))
+import re
+
+s = "2023-11-24 12:03:11.006171"
+
+pat = r"\d{2}:\d{2}"
+mat = re.search(pat, s).group()
+
+
+def convert_24_to_12(time_str):
+    hr = int(time_str[:2])
+    conv_hr = hr - 12 if hr > 12 else (12 if hr == 0 else hr)
+    am_pm = "am" if hr < 12 else "pm"
+    return f"{conv_hr}:{time_str[3:]}{am_pm}"
+
+
+print(convert_24_to_12(mat))
+# 0-12 am
+# 12-0 pm

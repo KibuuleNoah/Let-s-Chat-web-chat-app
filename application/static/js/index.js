@@ -2,6 +2,28 @@ const messageInput = document.getElementById("message-input");
 const socketio = io({autoConnect:false});
 socketio.connect()
 
+
+const getMsgSenderInfo = async (sender_id)=> {
+  try {
+    const response = await fetch('http://127.0.0.1:5000/vws/GMSI', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({sender_id:sender_id}),
+    });
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+    const responseData = await response.json();
+    console.log(responseData); // You can handle or return the data as needed
+    return responseData;
+  } catch (error) {
+    console.error('Error:', error);
+  }
+}
+
+
 //send the cropped image to the backend
 const sendToFlaskBackend = (croppedDataURL,endpoint)=> {
   // Make an HTTP POST request to your Flask backend
@@ -249,8 +271,9 @@ const sendMessage = (msgInput,room,sender_id) =>{
 }
 
 //displays messages in the room
-const displayMessage = (messageDiv,msgContainer,message,time,direction,sender_id)=>{
+const displayMessage = async (messageDiv,msgContainer,message,time,direction,sender_id)=>{
   if (message){
+    let sender_info = await getMsgSenderInfo(sender_id);
     if (direction == "right"){
       messageDiv.setAttribute("class",`card align-self-end mb-3 pb-0 ml-0`);
       messageDiv.innerHTML = `
@@ -263,25 +286,27 @@ const displayMessage = (messageDiv,msgContainer,message,time,direction,sender_id
       // console.log("append the message");
     }
     else{
-      socketio.emit("get_msg_sender_info",sender_id);
-      socketio.on("get_msg_sender_info",(infoObj)=>{
+      // let sender_info = await getMsgSenderInfo(sender_id);
+      // console.log(sender_info["name"])
+      // await socketio.emit("get_msg_sender_info",sender_id);
+      // await socketio.on("get_msg_sender_info",(infoObj)=>{
         // console.log(infoObj.photo)
-        messageDiv.setAttribute("class","card mb-3 pb-0 ml-0");
-        messageDiv.innerHTML = `
-        <div class="card-header d-flex flex-column">
-          <img src="data:image/png;base64,${infoObj.photo}" class="card-img-top align-self-start" alt="..." style="width:32px;height:30px;border-radius:50%;">
-          <small class="m-15 align-self-end">${infoObj.name.replace(/\s+/g,"_")}</small>
-        </div>
-        <div class="card-body pb-0">
-          <p class="card-text mb-0 pb-0">${message}</p>
-          <p class="card-text m-0 p-0" style="text-align: right;"><small class="text-body-secondary">${time}</small></p>
+      messageDiv.setAttribute("class","card mb-3 pb-0 ml-0");
+      messageDiv.innerHTML = `
+      <div class="card-header d-flex flex-column">
+        <img src="data:image/png;base64,${sender_info.photo}" class="card-img-top align-self-start" alt="..." style="width:32px;height:30px;border-radius:50%;">
+        <small class="m-15 align-self-end">${sender_info.name.replace(/\s+/g,"_")}</small>
+      </div>
+      <div class="card-body pb-0">
+        <p class="card-text mb-0 pb-0">${message}</p>
+        <p class="card-text m-0 p-0" style="text-align: right;"><small class="text-body-secondary">${time}</small></p>
 
-        </div>
-        `;
-        msgContainer.appendChild(messageDiv);
-        console.log("append the message");
+      </div>
+      `;
+      msgContainer.appendChild(messageDiv);
+      console.log("append the message");
 
-      })
+      // })
       // messageDiv.setAttribute("class","card mb-3 pb-0 ml-0");
       // messageDiv.innerHTML = `
       // <div class="card-header d-flex">
@@ -417,19 +442,73 @@ if (document.title == "dashboard"){
       
     })
     socketio.on("get_room_messages",(roomMsgs)=>{
-      for (let msgobj of roomMsgs){
-        let messageDiv2 = document.createElement("div");
-        let sender_id = msgobj[1];
+      roomMsgs.forEach(msgobj => {
+        console.log(msgobj);
+        let messageDiv = document.createElement("div");
+        let direction = giveMessageDirection(msgobj[1],userId);
         let msg = msgobj[2];
-        console.log(sender_id)
-        // console.log(msgobj[0])
-        let time = "coming";
-        let direction = giveMessageDirection(sender_id,userId);
-        console.log(direction,msg)
-        // socketio.emit("get_msg_sender_info",sender_id);
-
-        displayMessage(messageDiv2,msgContainer,msg,time,direction,sender_id);
-      }
+        let sender_id = msgobj[1]
+        let time = msgobj[3]
+        console.log(msg,direction,userId)
+        displayMessage(messageDiv,msgContainer,msg,time,direction,sender_id)
+        // if (direction == "right"){
+        //   messageDiv.setAttribute("class",`card align-self-end mb-3 pb-0 ml-0`);
+        //   messageDiv.innerHTML = `
+        //   <div class="card-body pb-0">
+        //     <p class="card-text mb-0 pb-0">${msg}</p>
+        //     <p class="card-text m-0 p-0" style="text-align: right;"><small class="text-body-secondary">{time}</small></p>
+        //   </div>
+        //   `;
+        //   msgContainer.appendChild(messageDiv);
+        //   // console.log("append the message");
+        // }
+        // else{
+        //   // socketio.emit("get_msg_sender_info",sender_id);
+        //   // socketio.on("get_msg_sender_info",(infoObj)=>{
+        //     // console.log(infoObj.photo)
+        //   messageDiv.setAttribute("class","card mb-3 pb-0 ml-0");
+        //   messageDiv.innerHTML = `
+        //   <div class="card-header d-flex flex-column">
+        //     <img src="data:image/png;base64,{infoObj.photo}" class="card-img-top align-self-start" alt="..." style="width:32px;height:30px;border-radius:50%;">
+        //     <small class="m-15 align-self-end">{infoObj.name.replace(/\s+/g,"_")}</small>
+        //   </div>
+        //   <div class="card-body pb-0">
+        //     <p class="card-text mb-0 pb-0">${msg}</p>
+        //     <p class="card-text m-0 p-0" style="text-align: right;"><small class="text-body-secondary">{time}</small></p>
+        //
+        //   </div>
+        //   `;
+        //   msgContainer.appendChild(messageDiv);
+        //   console.log("append the message");
+        //   // })
+        // }
+        // if (direction == "left"){
+        //   let tE = document.createElement("div");
+        //   tE.className = "align-self-end"
+        //   tE.innerHTML = "<h1>nijijiu</h1>";
+        //   msgContainer.appendChild(tE)
+        // }
+        // else{
+        //   let tE = document.createElement("div");
+        //   tE.className = "align-self-start"
+        //   tE.innerHTML = "<h1>nijijiu</h1>";
+        //   msgContainer.appendChild(tE)
+        // }
+      });
+      // for (let msgobj of roomMsgs){
+      //   // let msgContainer = document.getElementById("messages")
+      //   let messageDiv2 = document.createElement("div");
+      //   let sender_id = msgobj[1];
+      //   let msg = msgobj[2];
+      //   console.log(sender_id)
+      //   // console.log(msgobj[0])
+      //   let time = "coming";
+      //   let direction = giveMessageDirection(sender_id,userId);
+      //   console.log(direction,msg)
+      //   // socketio.emit("get_msg_sender_info",sender_id);
+      //
+      //   displayMessage(messageDiv2,msgContainer,msg,time,direction,sender_id);
+      // }
     })
   })
   let deletRoomBtns = document.querySelectorAll(".dropdown-item.text-danger");
@@ -465,3 +544,74 @@ const deleteRoom = (roomId)=> {
 //       textarea.style.maxHeight = "100px"
 //   };
 // }
+// Open sidebar
+/*
+Bootstrap Flex Message Display
+
+ChatGPT 3.5
+
+User
+ I'm loading messages from a database I have already implemented a JavaScript function that determines whether a message should go left or right, now write a when give a direction it uses bootstrap flex column to display a message on the right or left. Note I want to use it in a for loop to display all the available messages but also show me it in usage
+
+ChatGPT
+Certainly! If you have a JavaScript function that determines the direction of a message (left or right), and you want to use Bootstrap flex to display messages accordingly, you can do something like this:
+
+html
+Copy code
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <title>Message Display</title>
+</head>
+<body>
+
+<div class="container mt-3">
+    <div id="messageContainer"></div>
+</div>
+
+<script>
+    // Your JavaScript function to determine message direction
+    function getMessageDirection(message) {
+        // Your logic here to determine direction (e.g., based on user or system messages)
+        return message.from === 'user' ? 'right' : 'left';
+    }
+
+    // Sample messages from your database
+    const messages = [
+        { text: 'Hello!', from: 'user' },
+        { text: 'Hi there!', from: 'system' },
+        // Add more messages as needed
+    ];
+
+    // Display messages using Bootstrap flex
+    const messageContainer = document.getElementById('messageContainer');
+
+    messages.forEach(message => {
+        const direction = getMessageDirection(message);
+        const messageClass = `d-flex flex-column ${direction === 'right' ? 'align-items-end' : 'align-items-start'}`;
+
+        const messageElement = document.createElement('div');
+        messageElement.className = messageClass;
+        messageElement.innerHTML = `<div class="p-2">${message.text}</div>`;
+
+        messageContainer.appendChild(messageElement);
+    });
+</script>
+
+</body>
+</html>
+This code sets up a basic HTML structure and uses JavaScript to loop through your messages, applying Bootstrap flex classes to position them to the left or right based on the result of your getMessageDirection function. Adjust the function and styles according to your needs.
+
+
+
+
+
+
+Message ChatGPT…
+
+ChatGPT can make mistakes. Consider checking important information.
+ChatGPT
+*/

@@ -1,5 +1,6 @@
 from flask import request
 from flask_socketio import SocketIO, emit, join_room
+from socketio.zmq_manager import re
 from application import create_app
 from flask_login import current_user
 from application.Views.views import get_user_img
@@ -32,6 +33,18 @@ def create_room_now(name, moto, image_data):
     db.session.commit()
 
 
+def get_time_from_datetime(string):
+    print(re.search(r"\d{2}:\d{2}", str(string)).group())
+    return re.search(r"\d{2}:\d{2}", str(string)).group()
+
+
+def convert_24_to_12(time_str):
+    hr = int(time_str[:2])
+    conv_hr = hr - 12 if hr > 12 else (12 if hr == 0 else hr)
+    am_pm = "am" if hr < 12 else "pm"
+    return f"{conv_hr}:{time_str[3:]}{am_pm}"
+
+
 @socketio.on("connect")
 def connection():
     print("connected")
@@ -59,6 +72,7 @@ def handle_join_one(roomObj):
                     msgobj.id,
                     msgobj.sender_id,
                     msgobj.message,
+                    convert_24_to_12(get_time_from_datetime(msgobj.time)),
                 ]
                 for msgobj in room_msgs
             ]

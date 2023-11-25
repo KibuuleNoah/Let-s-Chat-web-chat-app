@@ -151,6 +151,17 @@ def delete_room():
     return jsonify({})
 
 
+@views.route("/GMSI", methods=["POST"])
+def get_msg_sender_info():
+    data = json.loads(request.data)
+    print(data)
+    sender_id = data["sender_id"]
+    user = User.query.get(sender_id)
+    user_name = user.name
+    user_photo = convert_to_base64(user.photo)
+    return jsonify({"name": user_name, "photo": user_photo})
+
+
 @views.app_template_filter("to_base64")
 def to_base64(s):
     return convert_to_base64(s)
