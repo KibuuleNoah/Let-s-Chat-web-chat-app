@@ -400,8 +400,8 @@ if (document.title == "dashboard"){
       let time = msgObj.time;
       let direction = giveMessageDirection(msgObj.id,userId);
 
-      displayMessage(messageDiv1,msgContainer,message,time,direction);
-      
+      displayMessage(messageDiv1,msgContainer,message,time,direction,"boah","data",);
+
     })
     socketio.on("get_room_messages",(roomMsgs)=>{
       roomMsgs.forEach(msgobj => {

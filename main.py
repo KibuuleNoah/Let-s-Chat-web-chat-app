@@ -114,11 +114,9 @@ def handle_messsage(msgObj):
     room_data = Room.query.filter_by(room_name=room).first()
     # save message to the database
     save_message(msg, sender_id, room_data.id)
-    # new_msg = Message(message=msg, sender_id=sender_id, room_id=room_data.id)
-    # db.session.add(new_msg)
-    # db.session.commit()
+
     msgObj = {"message": msg, "id": curr_usr_id, "time": curr_time}
-    emit("message", msgObj, broadcast=True, room=room)
+    emit("message", msgObj, broadcast=True, to=room)
 
 
 @socketio.on("get_msg_sender_info")
