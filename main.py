@@ -45,6 +45,13 @@ def convert_24_to_12(time_str):
     return f"{conv_hr}:{time_str[3:]}{am_pm}"
 
 
+def get_MSI(sender_id):
+    if sender_id == current_user.id:
+        user = User.query.get(sender_id)
+        return [user.name, user.photo]
+    return ["", ""]
+
+
 @socketio.on("connect")
 def connection():
     print("connected")
@@ -71,6 +78,7 @@ def handle_join_one(roomObj):
                     # get sender image by using the sender id
                     msgobj.id,
                     msgobj.sender_id,
+                    *get_MSI(msgobj.id),
                     msgobj.message,
                     convert_24_to_12(get_time_from_datetime(msgobj.time)),
                 ]

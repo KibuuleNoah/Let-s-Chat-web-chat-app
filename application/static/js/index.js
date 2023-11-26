@@ -5,19 +5,21 @@ socketio.connect()
 
 const getMsgSenderInfo = async (sender_id)=> {
   try {
-    const response = await fetch('http://127.0.0.1:5000/vws/GMSI', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({sender_id:sender_id}),
-    });
-    if (!response.ok) {
-      throw new Error('Network response was not ok');
+    if (sender_id){
+      const response = await fetch('http://127.0.0.1:5000/vws/GMSI', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({sender_id:sender_id}),
+      });
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      const responseData = await response.json();
+      console.log(responseData); // You can handle or return the data as needed
+      return responseData;
     }
-    const responseData = await response.json();
-    console.log(responseData); // You can handle or return the data as needed
-    return responseData;
   } catch (error) {
     console.error('Error:', error);
   }
@@ -271,9 +273,9 @@ const sendMessage = (msgInput,room,sender_id) =>{
 }
 
 //displays messages in the room
-const displayMessage = async (messageDiv,msgContainer,message,time,direction,sender_id)=>{
+const displayMessage = (messageDiv,msgContainer,message,time,direction,name,photo)=>{
   if (message){
-    let sender_info = await getMsgSenderInfo(sender_id);
+    // let sender_info = getMsgSenderInfo(sender_id);
     if (direction == "right"){
       messageDiv.setAttribute("class",`card align-self-end mb-3 pb-0 ml-0`);
       messageDiv.innerHTML = `
@@ -294,8 +296,8 @@ const displayMessage = async (messageDiv,msgContainer,message,time,direction,sen
       messageDiv.setAttribute("class","card mb-3 pb-0 ml-0");
       messageDiv.innerHTML = `
       <div class="card-header d-flex flex-column">
-        <img src="data:image/png;base64,${sender_info.photo}" class="card-img-top align-self-start" alt="..." style="width:32px;height:30px;border-radius:50%;">
-        <small class="m-15 align-self-end">${sender_info.name.replace(/\s+/g,"_")}</small>
+        <img src="data:image/png;base64,${photo}" class="card-img-top align-self-start" alt="..." style="width:32px;height:30px;border-radius:50%;">
+        <small class="m-15 align-self-end">${name.replace(/\s+/g,"_")}</small>
       </div>
       <div class="card-body pb-0">
         <p class="card-text mb-0 pb-0">${message}</p>
@@ -405,12 +407,17 @@ if (document.title == "dashboard"){
       roomMsgs.forEach(msgobj => {
         console.log(msgobj);
         let messageDiv = document.createElement("div");
-        let direction = giveMessageDirection(msgobj[1],userId);
-        let msg = msgobj[2];
         let sender_id = msgobj[1]
-        let time = msgobj[3]
+        let name = msgobj[2]
+        let photo = msgobj[3]
+        let msg = msgobj[4];
+        let time = msgobj[5]
+        let direction = giveMessageDirection(sender_id,userId);
         console.log(msg,direction,userId)
-        displayMessage(messageDiv,msgContainer,msg,time,direction,sender_id)
+        
+        // let sender_info = getMsgSenderInfo(sender_id);
+        // if (sender_info){
+          displayMessage(messageDiv,msgContainer,msg,time,direction,name,photo)
       });
     })
   })
