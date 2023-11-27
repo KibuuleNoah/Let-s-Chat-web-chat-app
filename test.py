@@ -49,6 +49,11 @@ import base64
 # print(convert_24_to_12(mat))
 # 0-12 am
 # 12-0 pm
-l1 = [1, 2, 3]
-l2 = [*l1, 7, 9, 9]
-print(l2)
+# l1 = [1, 2, 3]
+# l2 = [*l1, 7, 9, 9]
+# print(l2)
+
+from datetime import datetime
+
+t = datetime.utcnow()
+print(t)

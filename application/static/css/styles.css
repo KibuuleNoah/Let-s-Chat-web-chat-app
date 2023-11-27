@@ -126,4 +126,6 @@ html{
   font-size: 40%;
 }
 
-
+.del-btn:disabled{
+  color: #D7B7B7;
+}

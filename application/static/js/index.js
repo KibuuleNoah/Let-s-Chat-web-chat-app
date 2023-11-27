@@ -3,29 +3,6 @@ const socketio = io({autoConnect:false});
 socketio.connect()
 
 
-const getMsgSenderInfo = async (sender_id)=> {
-  try {
-    if (sender_id){
-      const response = await fetch('http://127.0.0.1:5000/vws/GMSI', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({sender_id:sender_id}),
-      });
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-      const responseData = await response.json();
-      console.log(responseData); // You can handle or return the data as needed
-      return responseData;
-    }
-  } catch (error) {
-    console.error('Error:', error);
-  }
-}
-
-
 //send the cropped image to the backend
 const sendToFlaskBackend = (croppedDataURL,endpoint)=> {
   // Make an HTTP POST request to your Flask backend
@@ -73,6 +50,7 @@ const cropAndSendImage = (input,endpoint=null,socket=null,args=null)=> {
         // console.log(croppedDataURL);
         if (endpoint && !socket){
           sendToFlaskBackend(croppedDataURL,endpoint);
+          window.location.href = "/vws/";
         }
         else if (socket && !endpoint){
           socketio.emit(socket,{"imageData":croppedDataURL,args:args});
@@ -87,7 +65,7 @@ const submitRoomUpdates = ()=>{
   cropAndSendImage(input,window.location.pathname);
   document.getElementById("update-room-form").submit()
       
-  // window.location.href = "/vws/dashboard";
+  window.location.href = "/vws/";
 }
 
 //first hold the selected profile image 
@@ -262,7 +240,7 @@ const ExitChatRoom = (chatsSection,chatRoomSection)=>{
   document.getElementById("exit-room").addEventListener("click",()=>{
     // chatsSection.style.display = "block";
     // chatRoomSection.style.display = "none";
-    window.location.href = "/vws/dashboard"
+    window.location.href = "/vws/"
   })
 }
 //sends the message to the backend to be saved and clears message input box
@@ -281,7 +259,7 @@ const displayMessage = (messageDiv,msgContainer,message,time,direction,name,phot
       messageDiv.innerHTML = `
       <div class="card-body pb-0">
         <p class="card-text mb-0 pb-0">${message}</p>
-        <p class="card-text m-0 p-0" style="text-align: right;"><small class="text-body-secondary">${time}</small></p>
+        <p class="card-text m-0 p-0" style="text-align: right;"><small class="text-body-secondary">utc ${time}</small></p>
       </div>
       `;
       msgContainer.appendChild(messageDiv);
@@ -301,7 +279,7 @@ const displayMessage = (messageDiv,msgContainer,message,time,direction,name,phot
       </div>
       <div class="card-body pb-0">
         <p class="card-text mb-0 pb-0">${message}</p>
-        <p class="card-text m-0 p-0" style="text-align: right;"><small class="text-body-secondary">${time}</small></p>
+        <p class="card-text m-0 p-0" style="text-align: right;"><small class="text-body-secondary">utc ${time}</small></p>
 
       </div>
       `;
@@ -363,7 +341,7 @@ if (document.title == "dashboard"){
         if (!res){
           socketio.on("room_img",(imgObj)=>{
             console.log(imgObj)
-            window.location.href = "/vws/dashboard";
+            window.location.href = "/vws/";
             console.log("created")
             clearForm(form);
             createRoomToast.hide();
@@ -408,10 +386,12 @@ if (document.title == "dashboard"){
         console.log(msgobj);
         let messageDiv = document.createElement("div");
         let sender_id = msgobj[1]
-        let name = msgobj[2]
-        let photo = msgobj[3]
+        let name = msgobj[2];
+        let photo = msgobj[3];
         let msg = msgobj[4];
-        let time = msgobj[5]
+        let time = msgobj[5];
+        console.log(name)
+        console.log(photo)
         let direction = giveMessageDirection(sender_id,userId);
         console.log(msg,direction,userId)
         
@@ -435,93 +415,7 @@ const deleteRoom = (roomId)=> {
     method: "POST",
     body: JSON.stringify({ roomId: roomId }),
   }).then((_res) => {
-    window.location.href = "/vws/dashboard";
+    window.location.href = "/vws/";
   });
 }
 
-
-// if (document.title == "room"){
-//     // Custom JavaScript to expand the text area
-//   messageInput.addEventListener("input", (e)=>{
-//       if (e.target && e.target.nodeName === "TEXTAREA") {
-//           autoExpand(e.target);
-//       }
-//   });
-//     
-//   function autoExpand(textarea) {
-//       // textarea.style.height = "10px";
-//       textarea.style.height = (textarea.scrollHeight) + "px";6
-//       textarea.style.maxHeight = "100px"
-//   };
-// }
-// Open sidebar
-/*
-Bootstrap Flex Message Display
-
-ChatGPT 3.5
-
-User
- I'm loading messages from a database I have already implemented a JavaScript function that determines whether a message should go left or right, now write a when give a direction it uses bootstrap flex column to display a message on the right or left. Note I want to use it in a for loop to display all the available messages but also show me it in usage
-
-ChatGPT
-Certainly! If you have a JavaScript function that determines the direction of a message (left or right), and you want to use Bootstrap flex to display messages accordingly, you can do something like this:
-
-html
-Copy code
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-    <title>Message Display</title>
-</head>
-<body>
-
-<div class="container mt-3">
-    <div id="messageContainer"></div>
-</div>
-
-<script>
-    // Your JavaScript function to determine message direction
-    function getMessageDirection(message) {
-        // Your logic here to determine direction (e.g., based on user or system messages)
-        return message.from === 'user' ? 'right' : 'left';
-    }
-
-    // Sample messages from your database
-    const messages = [
-        { text: 'Hello!', from: 'user' },
-        { text: 'Hi there!', from: 'system' },
-        // Add more messages as needed
-    ];
-
-    // Display messages using Bootstrap flex
-    const messageContainer = document.getElementById('messageContainer');
-
-    messages.forEach(message => {
-        const direction = getMessageDirection(message);
-        const messageClass = `d-flex flex-column ${direction === 'right' ? 'align-items-end' : 'align-items-start'}`;
-
-        const messageElement = document.createElement('div');
-        messageElement.className = messageClass;
-        messageElement.innerHTML = `<div class="p-2">${message.text}</div>`;
-
-        messageContainer.appendChild(messageElement);
-    });
-</script>
-
-</body>
-</html>
-This code sets up a basic HTML structure and uses JavaScript to loop through your messages, applying Bootstrap flex classes to position them to the left or right based on the result of your getMessageDirection function. Adjust the function and styles according to your needs.
-
-
-
-
-
-
-Message ChatGPT…
-
-ChatGPT can make mistakes. Consider checking important information.
-ChatGPT
-*/

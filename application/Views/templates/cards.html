@@ -7,7 +7,7 @@
       </a>
 
       <ul class="dropdown-menu">
-        <li><button class="dropdown-item text-danger" value="{{room.room_name}}" onclick="deleteRoom({{room.id}})"><i class="bi bi-trash"></i> Delete</button></li>
+        <li><input type="checkbox" class="form-check-input" id="deleteCheckBox"><button class="dropdown-item text-danger del-btn"  value="{{room.room_name}}" onclick="deleteRoom({{room.id}})"  disabled><i class="bi bi-trash"></i> Delete</button></li>
         <li><a href="/vws/settings/{{room.id}}" class="dropdown-item text-success" value="{{room.room_name}}"><i class="bi bi-pen"></i> Edit</a></li>
       </ul>
     </div>
@@ -37,6 +37,7 @@
 
 {% endmacro %}
 
+<!--card not used any where-->
 {% macro left_msg_card() %}
 <div style="max-width: 86%;" class="card mb-3 pb-0 ml-0">
   <div class="card-header d-flex">

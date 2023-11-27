@@ -1,69 +1,14 @@
 from flask import json, render_template, request, url_for, Blueprint, flash, jsonify
-from flask_login import current_user
-from flask_login import login_required
-from werkzeug.security import check_password_hash, generate_password_hash
+from flask_login import current_user, login_required
 
-from ..functions.main import convert_to_base64, convert_to_bytes
+from ..functions import *
 from ..Models.models import Message, Room, User, db
-import string
 
 views = Blueprint("views", __name__, template_folder="templates", url_prefix="/vws")
 
 
-# gets current user id and returns the user image
-def get_user_img(id_):
-    user = User.query.get(id_)
-    return convert_to_base64(user.photo)
-
-
-# update user name
-def update_user_name(new_name):
-    user = User.query.filter_by(name=new_name).first()
-    if not user:
-        User.query.filter_by(id=current_user.id).update({User.name: new_name})
-        db.session.commit()
-        flash("Name updated successfully!!")
-        return
-    flash("User Name already in User, Use another one", category="error")
-
-
-# updates user password
-def update_user_password(old_password, new_password):
-    # update user password
-    if check_password_hash(current_user.password, old_password):
-        pwd_hash = generate_password_hash(new_password)
-        User.query.filter_by(id=current_user.id).update({User.password: pwd_hash})
-        db.session.commit()
-        flash("Password updated successfully!!", category="success")
-        return
-    flash("You entered an correct old password", category="error")
-
-
-# updates room info like name and image
-def update_room_info(room_id, new_name, new_moto, new_image):
-    room = Room.query.get(room_id)
-    # Room_ = Room.query.filter_by(id=room_id)
-    # .update({Room.room_name: new_name})
-    if room.creater_id == current_user.id:
-        print("update allowed")
-        if new_name:
-            Room.query.filter_by(id=room_id).update({Room.room_name: new_name})
-            db.session.commit()
-        if new_moto:
-            Room.query.filter_by(id=room_id).update({Room.room_moto: new_moto})
-            db.session.commit()
-        if new_image:
-            # new_image = convert_to_bytes(new_image.read())
-            print(new_image, "DATADATA")
-            Room.query.filter_by(id=room_id).update({Room.image: new_image})
-            db.session.commit()
-            print("updating room image")
-    else:
-        flash("you can't edit rooms that are not your", category="error")
-
-
 # dashboard route
-@views.route("/dashboard", methods=["GET", "POST"])
+@views.route("/", methods=["GET", "POST"])
 @login_required
 def dashboard():
     user_img = get_user_img(current_user.id)
@@ -74,7 +19,7 @@ def dashboard():
     print(your_rooms)
     print(other_rooms)
     return render_template(
-        "dashboard.html",
+        "index.html",
         user_name=current_user.name,
         your_rooms=your_rooms,
         other_rooms=other_rooms,
@@ -173,13 +118,3 @@ def get_msg_sender_info():
 @views.app_template_filter("to_base64")
 def to_base64(s):
     return convert_to_base64(s)
-
-
-# @views.route("/upload", methods=["POST"])
-# def upload():
-#     data = request.get_json()
-#     image_data = data.get("imageData")
-#     # print(image_data)
-#     # Process the image_data as needed (e.g., save it to the database)
-#
-#     return jsonify({"message": "Image uploaded successfully"})

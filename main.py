@@ -5,7 +5,7 @@ from application import create_app
 from flask_login import current_user
 from application.Views.views import get_user_img
 from application.Models.models import User, Message, Room, db
-from application.functions.main import convert_to_bytes, convert_to_base64
+from application.functions import convert_to_bytes, convert_to_base64
 from time import strftime
 import time
 
@@ -46,9 +46,11 @@ def convert_24_to_12(time_str):
 
 
 def get_MSI(sender_id):
-    if sender_id == current_user.id:
+    print(sender_id)
+    if not (sender_id == current_user.id):
         user = User.query.get(sender_id)
-        return [user.name, user.photo]
+        print(user)
+        return [user.name, convert_to_base64(user.photo)]
     return ["", ""]
 
 
@@ -65,7 +67,19 @@ def handle_join_one(roomObj):
     # room = YourModel.query.filter_by(sender_id=sender_id_to_filter)\
     # .order_by(YourModel.message_id).all()
     room_msgs = room.messages
-    print([[msgobj.id, msgobj.message, msgobj.sender_id] for msgobj in room_msgs])
+    # print(
+    #     [
+    #         [
+    #             # get sender image by using the sender id
+    #             msgobj.id,
+    #             msgobj.sender_id,
+    #             *get_MSI(msgobj.sender_id),
+    #             msgobj.message,
+    #             convert_24_to_12(get_time_from_datetime(msgobj.time)),
+    #         ]
+    #         for msgobj in room_msgs
+    #     ]
+    # )
     sid = request.sid
     join_room(roomObj["room"])
     print(sid, "joined -> ", roomObj["room"])
@@ -78,7 +92,7 @@ def handle_join_one(roomObj):
                     # get sender image by using the sender id
                     msgobj.id,
                     msgobj.sender_id,
-                    *get_MSI(msgobj.id),
+                    *get_MSI(msgobj.sender_id),
                     msgobj.message,
                     convert_24_to_12(get_time_from_datetime(msgobj.time)),
                 ]
@@ -119,17 +133,6 @@ def handle_messsage(msgObj):
     emit("message", msgObj, broadcast=True, to=room)
 
 
-@socketio.on("get_msg_sender_info")
-def get_msg_sender_info(sender_id):
-    user = User.query.get(int(sender_id))
-    user_name = user.name
-    user_photo = convert_to_base64(user.photo)
-    emit(
-        "get_msg_sender_info",
-        {"name": user_name, "photo": user_photo},
-    )
-
-
 @socketio.on("bounce-save")
 def bounce_save(data):
     print("receiving .......")
@@ -143,16 +146,3 @@ def bounce_save(data):
 
 if __name__ == "__main__":
     socketio.run(app, debug=True)
-#
-# # Example of updating data based on column1
-# YourModel.query.filter(YourModel.column1 == 'old_value').update({YourModel.column1: 'new_value'})
-# db.session.commit()
-#
-# class YourModel(db.Model):
-#     id = db.Column(db.Integer, primary_key=True)
-#     column1 = db.Column(db.String(50))
-#     column2 = db.Column(db.String(50))
-#
-# # Example of selecting data based on column1
-# result = YourModel.query.filter(YourModel.column1 == 'desired_value').all()
-#
