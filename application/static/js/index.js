@@ -225,7 +225,8 @@ const EnterChatRoom = (chatsSection,chatRoomSection)=>{
     roomBtn.addEventListener("click",()=>{
       socketio.emit("join",{room : roomBtn.value})
       document.getElementById("room-title").innerText = roomBtn.value
-      document.getElementById("room-nav-img").src = roomBtn.parentNode.previousSibling.previousSibling.src
+      document.getElementById("room-nav-img").src = roomBtn.parentNode.previousSibling.previousSibling;
+      // console.log("SIB-:",roomBtn.previousSibling.previousSibling);
       socketio.on("get_room_messages",(roomMsgs)=>{
         chatsSection.style.display = "none";
         chatRoomSection.style.display = "block";
@@ -263,17 +264,11 @@ const displayMessage = (messageDiv,msgContainer,message,time,direction,name,phot
       </div>
       `;
       msgContainer.appendChild(messageDiv);
-      // console.log("append the message");
     }
     else{
-      // let sender_info = await getMsgSenderInfo(sender_id);
-      // console.log(sender_info["name"])
-      // await socketio.emit("get_msg_sender_info",sender_id);
-      // await socketio.on("get_msg_sender_info",(infoObj)=>{
-        // console.log(infoObj.photo)
       messageDiv.setAttribute("class","card mb-3 pb-0 ml-0");
       messageDiv.innerHTML = `
-      <div class="card-header d-flex flex-column">
+      <div class="card-header d-flex flex-column shrink-1">
         <img src="data:image/png;base64,${photo}" class="card-img-top align-self-start" alt="..." style="width:32px;height:30px;border-radius:50%;">
         <small class="m-15 align-self-end">${name.replace(/\s+/g,"_")}</small>
       </div>
@@ -285,22 +280,6 @@ const displayMessage = (messageDiv,msgContainer,message,time,direction,name,phot
       `;
       msgContainer.appendChild(messageDiv);
       console.log("append the message");
-
-      // })
-      // messageDiv.setAttribute("class","card mb-3 pb-0 ml-0");
-      // messageDiv.innerHTML = `
-      // <div class="card-header d-flex">
-      //   <img src="data:image/png;base64,${sender_img}" class="card-img-top align-self-start" alt="..." style="width:30px;height:30px;border-radius:50%;">
-      //   <span class="m-15">kibuule_noah</span>
-      // </div>
-      // <div class="card-body pb-0">
-      //   <p class="card-text mb-0 pb-0">${message}</p>
-      //   <p class="card-text m-0 p-0" style="text-align: right;"><small class="text-body-secondary">${time}</small></p>
-      //
-      // </div>
-      // `;
-      // msgContainer.appendChild(messageDiv);
-      // console.log("append the message");
     }
   }
 }
