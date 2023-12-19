@@ -1,10 +1,16 @@
 {% from "cards.html" import right_msg_card,left_msg_card %}
 {% macro room(title) %}
 <section id="chat-room">
+  <!-- <marquee behavior="scroll" direction="left" scrollamount="2"> -->
+  <!--   Lorem ipsum dolor sit amet, officia excepteur ex fugiat reprehenderit enim labore culpa sint ad nisi Lorem pariatur mollit ex esse exercitation amet. Nisi anim cupidatat excepteur officia. Reprehenderit nostrud nostrud ipsum Lorem est aliquip amet voluptate voluptate dolor minim nulla est proident. Nostrud officia pariatur ut officia. Sit irure elit esse ea nulla sunt ex occaecat reprehenderit commodo officia dolor Lorem duis laboris cupidatat officia voluptate. Culpa proident adipisicing id nulla nisi laboris ex in Lorem sunt duis officia eiusmod. Aliqua reprehenderit commodo ex non excepteur duis sunt velit enim. Voluptate laboris sint cupidatat ullamco ut ea consectetur et est culpa et culpa duis. -->
+  <!-- </marquee> -->
   <nav class="navbar bg-info mb-3" style="position: sticky;top: 0px;">
     <div class="container d-flex">
       <button id="exit-room" class="navbar-brand align-self-start fs-1" style="background-color: inherit;border: 0px;"><i class="bi bi-box-arrow-left"></i></button>
-      <span id="room-title" class="navbar-brand align-self-center fs-1"></span>
+        <div  class="navbar-brand align-self-center fs-1 cssmarquee">
+            <span id="room-title"></span>
+       </div>
+        <!-- <span id="room-title" class="navbar-brand align-self-center fs-1"></span> -->
       <div class="navbar-brand align-self-end fs-1">
         <img id="room-nav-img" src="" alt="" width="50px" height="50px" style="border: 3px solid #fff;border-radius: 50%;">
       </div>
@@ -17,6 +23,5 @@
     <button class="btn btn-outline input-group-text" id="send-btn"><i class="fs-1 fa fa-send-o" style="transform: rotate(20deg);:"></i></span>
   </div>
   <div id="bottompage" style="height: 65px;margin:90px;"></div>
-
 </section>
 {% endmacro %}

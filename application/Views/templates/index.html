@@ -6,7 +6,10 @@
 {% block content %}
 <section id="chats-display">
   <nav class="navbar bg-info mb-0" style="position: sticky;top: 0px;"> 
-    <div class="container d-flex flex-column"> 
+    <div class="container d-flex flex-row">
+        <div class="align-self-start pt-5">
+          <h4>Let's chat and create</h4>
+        </div>
         <div class="align-self-end">  
           <nav class="nav flex-column p-1 m-1"> 
             <a class="nav-link active fs-2 pb-0 mb-0"href="/vws/profile"><img src="data:image/png;base64, {{img_data}}" alt="" class="h-img"></a> 
@@ -70,7 +73,36 @@
        <h3 style="color:rgba(0,0,0,0.5);" align="center">No rooms yet</h3>
      {% endif %}
   </section> 
-
+  <section>
+    <!-- Button trigger modal -->
+<!-- <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal"> -->
+  <!-- Launch demo modal -->
+<!-- </button> -->
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
+        <!-- <button type="button" class="btn-close" ></button> -->
+      </div>
+      <div class="modal-body">
+        ...
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+        <button type="button" class="btn btn-primary" onclick="">Yes</button>
+      </div>
+    </div>
+  </div>
+</div>  </section>
 </section>    
 {{room()}}
+<script>
+  document.getElementById('deleteCheckBox').addEventListener('change', function() {
+        document.getElementById('deleteCheckBox').nextSibling.disabled= !this.checked;
+
+    });
+    
+</script>
 {% endblock %}

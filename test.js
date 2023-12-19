@@ -104,31 +104,49 @@
 // let t = testApi(5)
 // console.log(t[""])
 
-const getMsgSenderInfo = async (sender_id)=> {
-  try {
-    const response = await fetch('http://127.0.0.1:5000/vws/GMSI', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({sender_id:sender_id}),
-    });
-    if (!response.ok) {
-      throw new Error('Network response was not ok');
-    }
-    const responseData = await response.json();
-    console.log(responseData); // You can handle or return the data as needed
-    return responseData;
-  } catch (error) {
-    console.error('Error:', error);
-  }
+// const getMsgSenderInfo = async (sender_id)=> {
+//   try {
+//     const response = await fetch('http://127.0.0.1:5000/vws/GMSI', {
+//       method: 'POST',
+//       headers: {
+//         'Content-Type': 'application/json',
+//       },
+//       body: JSON.stringify({sender_id:sender_id}),
+//     });
+//     if (!response.ok) {
+//       throw new Error('Network response was not ok');
+//     }
+//     const responseData = await response.json();
+//     console.log(responseData); // You can handle or return the data as needed
+//     return responseData;
+//   } catch (error) {
+//     console.error('Error:', error);
+//   }
+// }
+//
+// // Example usage:
+// const dataToSend = {
+//   // Your data here
+// };
+//
+// getMsgSenderInfo(5);
+//
+//
+
+const FetchGRI = async ()=>{
+  await fetch("http://127.0.0.1:5000/GRI",{
+    method:"POST",
+    headers:{
+      "Content-Type":"application/json"
+    },
+    body:JSON.stringify({roomName:r})
+  })
+    .then( async res => {
+      data = await res.text();
+      console.log(data);
+    })
+
+  console.log("End");
 }
 
-// Example usage:
-const dataToSend = {
-  // Your data here
-};
-
-getMsgSenderInfo(5);
-
-
+FetchGRI()
