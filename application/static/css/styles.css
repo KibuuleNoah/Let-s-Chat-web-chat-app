@@ -129,3 +129,27 @@ html{
 .del-btn:disabled{
   color: #D7B7B7;
 }
+
+
+.cssmarquee {
+max-width: 50%;
+overflow: hidden;
+}
+.cssmarquee span {
+display: inline-block;
+margin: 0;
+line-height: 50px;
+text-align: center;
+/* Starting position */
+transform: translateX(100%);
+animation: cssmarquee 10s linear infinite;
+}
+
+@keyframes cssmarquee {
+0% {
+transform: translateX(100%);
+}
+100% {
+transform: translateX(-100%);
+}
+}

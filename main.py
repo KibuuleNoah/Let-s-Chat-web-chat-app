@@ -1,4 +1,5 @@
-from flask import request
+from flask import request, jsonify
+from flask.json import loads
 from flask_socketio import SocketIO, emit, join_room
 from socketio.zmq_manager import re
 from application import create_app
@@ -142,6 +143,16 @@ def bounce_save(data):
     print("emittinig.......")
     emit("room_img", {"imageData": data["imageData"]})
     print("emitted")
+
+
+@app.route("/GRI", methods=["POST"])
+def get_room_image():
+    data = loads(request.data)
+    room_name = data["roomName"]
+    room = Room.query.filter_by(room_name=room_name).first()
+    if room:
+        return jsonify({"imageData": convert_to_base64(room.image)})
+    return jsonify({})
 
 
 if __name__ == "__main__":

@@ -118,3 +118,8 @@ def get_msg_sender_info():
 @views.app_template_filter("to_base64")
 def to_base64(s):
     return convert_to_base64(s)
+
+
+@views.app_template_filter("truct")
+def truct(text):
+    return text[:10] + "..." if len(text) > 10 else text

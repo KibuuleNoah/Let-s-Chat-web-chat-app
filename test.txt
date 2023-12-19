@@ -1,0 +1,503 @@
+
+Subscribe
+How to Implement Styling Marquees in HTML and CSS
+Last updated on Feb 22,202370.4K Views
+
+edureka
+edureka
+
+
+image not found!
+
+image not found!
+How to Implement Styling Marquees in HTML and CSS
+edureka.co
+
+
+
+
+image not found!
+Whatsapp
+
+image not found!
+Linkedin
+
+image not found!
+Twitter
+
+image not found!
+Facebook
+
+image not found!
+Reddit
+
+Copy Link
+
+image not found!
+Marquees are standard method for creating scrolling, bouncing, or slide-in text and images. It is a very important aspect in terms of Both HTML and CSS. Let’s start the Journey of Marquees in HTML and CSS in the following order:
+
+What Are Marquees?
+HTML Marquees
+CSS Marquees
+Scrolling Text
+Slide-In Text
+Left to Right
+Scroll Vertically
+Bouncing Text
+Another way to create Marquee in CSS
+HTML Marquees vs CSS Marquees
+ 
+
+ 
+
+What Are Marquees?
+Marquee is a special effect that is used to move or scroll the content horizontally across and vertically down in our HTML web pages. The content can be anything in the webpage i.e some text or images.
+
+
+Marquees in HTML
+The marquee can be set using both HTML tags and CSS properties.
+
+ 
+
+HTML Marquees
+The HTML <marquee> tag is used to create and style marquees.  The HTML syntax to create scrolling text using marquess is 
+
+<marquee attribute_name = "attribute_value" attribute_name_2 = "attribute_value_2" ..... >
+Text or Image to Scroll
+</marquee>
+<html>
+<body>
+<marquee>Scrolling Marquee</marquee>
+</body>
+</html>
+The possible values of attributes that can be used along with the <marquee> tag is:
+
+width – It indicates the width of the marquee. E.g. 20, 40, 50% etc. The default value for width is 100%
+
+<html>
+<body>
+<marquee width = "50%">Scrolling Marquee with 50% width</marquee>
+</body>
+</html>
+height – It indicates the height of the marquee. E.g. 20, 50% etc. This default value of height is the natural height of the content.
+
+<html>
+<body>
+<marquee height = "50%">Scrolling Marquee with 50% height</marquee>
+</body>
+</html>
+direction – It indicates the direction in which we want the marquee to scroll. Its values are up, down, left or right. The default value for the direction is left i.e the marquee starts from the right and moves across towards the left.
+
+<html>
+<body>
+<marquee direction = "right">Marquee moving left to right</marquee>
+</body>
+</html>
+behavior – It indicates the scrolling type of the content. The possible values for this attribute is scroll, slide and alternate. E.g. the value like scroll, slide and alternate.
+
+<html>
+<body>
+<marquee behavior = "alternate">Scrolling Marquee with alternate behavior</marquee>
+</body>
+</html>
+scrolldelay – This indicates the delay between each marquees display. The amount of delay in assigned in milliseconds. The default value for this attribute is 85.
+
+<html>
+<body>
+<marquee scrolldelay = "200">Marquee with scrolldelay</marquee>
+</body>
+</html>
+scrollamount – This indicates the speed of the content or the marquee text. It can have values like 10, 20 etc. The default value for this attribute is 6. The attributes scrolldelay and scrollamount when used together provides good control of the pace and display of the marquee.
+
+<html>
+<body>
+<marquee scrollamount = "200">Marquee with scrollamount </marquee>
+</body>
+</html>
+bgcolor – This attribute sets the background color of the marquee. The color can be specified as color name or color hex value.
+
+<html>
+<body>
+<marquee bgcolor = "cyan">Marquee with bgcolor</marquee>
+</body>
+</html>
+loop – This attribute specifies the number of times a marquee should loop. By default, the marquee loops endlessly and so its default value is INFINITE.
+
+<html>
+<body>
+<marquee loop = "2">Marquee with loop</marquee>
+</body>
+</html>
+hspace – This attribute specifies the horizontal space to the left and right of the marquee. It can have values like 20, 40% etc.
+
+<html>
+<body>
+<marquee hspace = "20">Marquee with hspace</marquee>
+</body>
+</html>
+vspace – This attribute specifies the vertical space to the top and bottom of the marquee. It can have values like 20, 40% etc.
+
+<html>
+<body>
+<marquee vspace = "20">Marquee with vspace</marquee>
+</body>
+</html>
+Moving on with this article on Styling Marquees in HTML and CSS
+
+ 
+
+CSS Marquees
+CSS marquees are the standard ways of creating marquees. They are taking the place of HTML marquees by providing more features for scrolling text content and images.
+
+The marquees in CSS are created using the CSS animation property along with the @keyframes to manipulate the element and create the animation.
+
+Additionally, we need to use translateX() and translateY() in order to specify the path to the scrolling contents. The benefit of using this approach is that it is fully compliant with the CSS standards.
+
+
+ 
+
+Scrolling Text
+Here the translateX() is used to specify the content placement at the start and finish of the animation. It keeps moving between the start and end point throughout the animation.
+
+<html>
+<style>
+.cssmarquee {
+height: 50px;
+overflow: hidden;
+position: relative;
+}
+.cssmarquee h1 {
+font-size: 2em;
+color: turquoise;
+position: absolute;
+width: 100%;
+height: 100%;
+margin: 0;
+line-height: 50px;
+text-align: center;
+transform:translateX(100%);
+animation: cssmarquee 10s linear infinite;
+}
+@keyframes cssmarquee {
+0% {
+transform: translateX(100%);
+}
+100% {
+transform: translateX(-100%);
+}
+}
+</style>
+
+<div class="cssmarquee">
+<h1>Eurekaaa..Scrolling Text </h1>
+</div>
+<html>
+
+ 
+
+Slide-In Text
+When can make the content slide in by setting the translateX() values to zero or any positive value and remove the infinite settings for animation. Here we also use ease-out of the animation as we require to slow down the text before it stops finally.
+
+<html>
+<style>
+.cssmarquee {
+height: 50px;
+overflow: hidden;
+position: relative;
+}
+.cssmarquee h1 {
+position: absolute;
+width: 100%;
+height: 100%;
+margin: 0;
+line-height: 50px;
+text-align: left;
+animation: cssmarquee 5s ease-out;
+}
+@keyframes cssmarquee {
+0% {
+transform: translateX(200%);
+}
+100% {
+transform: translateX(0%);
+}
+}
+</style>
+
+<div class="cssmarquee">
+<h1>Eurekaaa..Slide-In Text </h1>
+</div>
+<html>
+ 
+
+
+ 
+
+Left to Right
+In order to make the text content scroll in the opposite direction i.e. left to right, we should reverse the values for translateX()
+
+<html>
+<style>
+.cssmarquee {
+height: 50px;
+overflow: hidden;
+position: relative;
+}
+.cssmarquee h1 {
+position: absolute;
+width: 100%;
+height: 100%;
+color: turquoise;
+margin: 0;
+line-height: 50px;
+text-align: center;
+/* Starting position */
+transform:translateX(-100%);
+animation: cssmarquee 10s linear infinite;
+}
+@keyframes cssmarquee {
+0% {
+transform: translateX(-100%);
+}
+100% {
+transform: translateX(100%);
+}
+}
+</style>
+
+<div class="cssmarquee">
+<h1>Eurekaa....Left to Right... </h1>
+</div>
+</html>
+ 
+
+
+ 
+
+Scroll Vertically
+To make the content scroll vertically, we need to use translateY() instead of translateX() we used in earlier examples..
+
+<style>
+.cssmarquee {
+height: 200px;
+overflow: hidden;
+position: relative;
+}
+.cssmarquee h1 {
+position: absolute;
+color: turquoise;
+width: 100%;
+height: 100%;
+margin: 0;
+line-height: 50px;
+text-align: center;
+transform: translateY(-100%);
+animation: cssmarquee 10s linear infinite;
+}
+@keyframes cssmarquee {
+0% {
+transform: translateY(-100%);
+}
+100% {
+transform: translateY(100%);
+}
+}
+</style>
+
+<div class="cssmarquee">
+<h1>Eurekaa..Scrolling down... </h1>
+</div>
+ 
+
+Bouncing Text
+This is used to make the content move to and fro like a bouncing ball. To render bouncing nature in the content we need add alternate to the animation property at the end. Later we can also optionally modify the values for translateX() so that the content does not bounce out of the page.
+
+<html>
+<style>
+.cssmarquee {
+height: 50px;
+overflow: hidden;
+position: relative;
+}
+.cssmarquee h1 {
+position: absolute;
+color: turquoise;
+width: 100%;
+height: 100%;
+margin: 0;
+line-height: 50px;
+text-align: left;
+animation: cssmarquee 2s linear infinite alternate;
+}
+@keyframes cssmarquee {
+0% {
+transform: translateX(70%);
+}
+100% {
+transform: translateX(0%);
+}
+}
+</style>
+
+<div class="cssmarquee">
+<h1>Eurekaa...Bouncing text... </h1>
+</div>
+<html>
+
+ 
+
+Another way to create Marquee in CSS
+The marquee-style property is another way to style a marquee in CSS. It provides the capability to scroll, bounce or slide in the content. However, this approach is not widely used and using the earlier approach is recommended.
+
+The possible parameters that can be used along with the CSS marquees are:
+
+scroll: This states that the content should scroll from one end of the element to the other end. Once it reached the other side the content disappears and then again starts scrolling. This is the default value for the marquees.
+
+slide: This makes the content slide from one end of the element and continues to slide until it reaches the other end and all of the content is displayed.
+
+alternate: This makes the content scroll from one end of the element to another end and then make it bounce back and forth.
+
+initial: It sets the default value for the property.
+
+inherit: It sets the value inherited from the parent element.
+
+none: This does not move the content.
+
+Although the marquees are supported by all browsers, but they are some old browsers webkit based that might not support this property. Hence it is required to add the prefix -webkit- to interpret the marquess in these old browsers. E.g. -webkit-marquee-style.
+
+Moving on with this article on Styling Marquees in HTML and CSS
+
+ 
+
+HTML Marquees vs CSS Marquees
+HTML Marquees are defined using the <marquee> tag. This approach provides us a quick way to create marquees and add them easily in our web pages. The <marquee> tag has some special attributes which can create scrolling text and images. This style of coding with html make the code easy to read and create marquee within a short span of time.
+
+The issue with the using the HTML marquee or <marquee> tag is that it is not fully compliant with official HTML standards. As the <marquee> tag is not part of the HTML specification, so if we want to create our HTML web pages that are fully compliant, we should use CSS marquees instead of HTML marquees.
+
+CSS Marquees are in-line with the official CSS specification. It internally uses CSS animations which are also included in the CSS specifications and so, it allows us to create fully compliant web pages using marquees.
+
+Also, CSS marquees are more powerful and offer more advanced features to create and style our marquees. However, the downside of these types of marquees is they take relatively longer to code and are complex for beginners.
+
+Example:
+
+HTML Marquee- Scrolling
+
+<marquee behavior="scroll" direction="left">
+<h1>HTML text scrolling...</h1>
+</marquee>
+ 
+
+CSS Marquee- Scrolling
+
+<html>
+<style>
+.cssmarquee {
+height: 50px;
+overflow: hidden;
+position: relative;
+}
+.cssmarquee h1 {
+font-size: 2em;
+color: turquoise;
+position: absolute;
+width: 100%;
+height: 100%;
+margin: 0;
+line-height: 50px;
+text-align: center;
+transform:translateX(100%);
+animation: cssmarquee 10s linear infinite;
+}
+
+@keyframes cssmarquee {
+0% {
+transform: translateX(100%);
+}
+100% {
+
+transform: translateX(-100%);
+}
+}
+</style>
+
+<div class="cssmarquee">
+<h1>CSS..Text Scrolling </h1>
+</div>
+</html>
+We can clearly see from the above example that both examples demonstrate similar results. However, creating a scrolling text with CSS is a little more complex and requires a lot more to code. One the other hand the benefit of using CSS marquees is that it offers us a lot more features to style our scrolling content and makes our browser fully complaint to works across various browsers.
+
+This concludes everything about marquees in HTML and CSS. Its provides a great way to style animations in our content be it text or any image. We should exploit all the options that it offers and create different marquees behavior. It is important to know about the animation and marquees in details for web developers. This can help to create dynamic content web pages.
+
+Learn how to integrate backend services into your Flutter apps in a comprehensive Flutter App Development Course.
+
+Check out our Full Stack Web Developer Masters Program which comes with instructor-led live training and real-life project experience. This training makes you proficient in skills to work with back-end and front-end web technologies. It includes training on Web Development, jQuery, Angular, NodeJS, ExpressJS, and MongoDB.
+
+Got a question for us? Please mention it in the comments section of “Marquees in HTML” blog and we will get back to you.
+
+Upcoming Batches For Web Developer Certification Training Course
+Course Name	Date	
+Web Developer Certification Training Course	
+30th December
+
+SAT&SUN (Weekend Batch)	View Details
+Web Developer Certification Training Course	
+27th January
+
+SAT&SUN (Weekend Batch)	View Details
+Categories: Front End Web Development
+Leave a Comment
+BROWSE COURSES
+
+TRENDING CERTIFICATION COURSES
+DevOps Certification Training
+AWS Architect Certification Training
+Big Data Hadoop Certification Training
+Tableau Training & Certification
+Python Certification Training for Data Science
+Selenium Certification Training
+PMP® Certification Exam Training
+Robotic Process Automation Training using UiPath
+Apache Spark and Scala Certification Training
+Microsoft Power BI Training
+Online Java Course and Training
+Python Certification Course
+TRENDING MASTERS COURSES
+Data Scientist Masters Program
+DevOps Engineer Masters Program
+Cloud Architect Masters Program
+Big Data Architect Masters Program
+Machine Learning Engineer Masters Program
+Full Stack Web Developer Masters Program
+Business Intelligence Masters Program
+Data Analyst Masters Program
+Test Automation Engineer Masters Program
+Post-Graduate Program in Artificial Intelligence & Machine Learning
+Post-Graduate Program in Big Data Engineering
+COMPANY
+About us
+News & Media
+Reviews
+Contact us
+Blog
+Community
+Sitemap
+Blog Sitemap
+Community Sitemap
+Webinars
+WORK WITH US
+Careers
+Become an Instructor
+Become an Affiliate
+Become a Partner
+Hire from Edureka
+DOWNLOAD APP
+ 
+© 2023 Brain4ce Education Solutions Pvt. Ltd. All rights Reserved. Terms & Conditions Legal & Privacy
+   
+"PMP®","PMI®", "PMI-ACP®" and "PMBOK®" are registered marks of the Project Management Institute, Inc. MongoDB®, Mongo and the leaf logo are the registered trademarks of MongoDB, Inc.
+
+Original text
+Rate this translation
+Your feedback will be used to help improve Google Translate
+
+

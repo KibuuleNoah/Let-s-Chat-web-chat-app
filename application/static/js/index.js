@@ -2,6 +2,9 @@ const messageInput = document.getElementById("message-input");
 const socketio = io({autoConnect:false});
 socketio.connect()
 
+const truct_text = (text)=>{
+  return text.length > 10 ? text.slice(0,10)+"..." : text
+}
 
 //send the cropped image to the backend
 const sendToFlaskBackend = (croppedDataURL,endpoint)=> {
@@ -222,10 +225,28 @@ if (document.title == "create" || document.title == "login" || document.title ==
 const EnterChatRoom = (chatsSection,chatRoomSection)=>{
   let roomBtns = document.getElementsByClassName("enter");
   for (let roomBtn of roomBtns){
-    roomBtn.addEventListener("click",()=>{
-      socketio.emit("join",{room : roomBtn.value})
-      document.getElementById("room-title").innerText = roomBtn.value
-      document.getElementById("room-nav-img").src = roomBtn.parentNode.previousSibling.previousSibling;
+    let roomName = roomBtn.value;
+    roomBtn.addEventListener("click",async ()=>{
+      socketio.emit("join",{room : roomName})
+      let roomTitle = document.getElementById("room-title");
+      roomTitle.innerText = roomName; 
+      if (roomName.length < 10){
+        roomTitle.style.animation = "none"
+        roomTitle.style.transform = "none"
+      }
+      //loads room image into the chat room nav bar
+      await fetch("http://127.0.0.1:5000/GRI",{
+        method:"POST",
+        headers:{
+          "Content-Type":"application/json"
+        },
+        body:JSON.stringify({roomName:roomName})
+      })
+        .then( async res => {
+          data = await res.json();
+          document.getElementById("room-nav-img").src = "data:image/png;base64, "+data["imageData"];
+        })
+
       // console.log("SIB-:",roomBtn.previousSibling.previousSibling);
       socketio.on("get_room_messages",(roomMsgs)=>{
         chatsSection.style.display = "none";
