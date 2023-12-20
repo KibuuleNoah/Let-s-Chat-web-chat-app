@@ -57,50 +57,39 @@ def get_MSI(sender_id):
 
 @socketio.on("connect")
 def connection():
-    print("connected")
+    pass
+    # print("connected")
 
 
 @socketio.on("join")
 def handle_join_one(roomObj):
+    """
+    performs some actions when the client joins the room
+    """
     room = Room.query.filter_by(room_name=roomObj["room"]).first()
 
-    # Alternatively, using filter_by method and order_by method
-    # room = YourModel.query.filter_by(sender_id=sender_id_to_filter)\
-    # .order_by(YourModel.message_id).all()
-    room_msgs = room.messages
-    # print(
-    #     [
-    #         [
-    #             # get sender image by using the sender id
-    #             msgobj.id,
-    #             msgobj.sender_id,
-    #             *get_MSI(msgobj.sender_id),
-    #             msgobj.message,
-    #             convert_24_to_12(get_time_from_datetime(msgobj.time)),
-    #         ]
-    #         for msgobj in room_msgs
-    #     ]
-    # )
-    sid = request.sid
-    join_room(roomObj["room"])
-    print(sid, "joined -> ", roomObj["room"])
-    emit("send_ids", {"user_id": current_user.id, "room": roomObj["room"]})
-    emit(
-        "get_room_messages",
-        sorted(
-            [
+    if room:
+        room_msgs = room.messages
+        join_room(roomObj["room"])
+
+        # print(sid, "joined -> ", roomObj["room"])
+        emit("send_ids", {"user_id": current_user.id, "room": roomObj["room"]})
+        emit(
+            "get_room_messages",
+            sorted(
                 [
-                    # get sender image by using the sender id
-                    msgobj.id,
-                    msgobj.sender_id,
-                    *get_MSI(msgobj.sender_id),
-                    msgobj.message,
-                    convert_24_to_12(get_time_from_datetime(msgobj.time)),
+                    [
+                        # get sender image by using the sender id
+                        msgobj.id,
+                        msgobj.sender_id,
+                        *get_MSI(msgobj.sender_id),
+                        msgobj.message,
+                        convert_24_to_12(get_time_from_datetime(msgobj.time)),
+                    ]
+                    for msgobj in room_msgs
                 ]
-                for msgobj in room_msgs
-            ]
-        ),
-    )
+            ),
+        )
 
 
 # endpoint for creating a room
@@ -155,5 +144,5 @@ def get_room_image():
     return jsonify({})
 
 
-if __name__ == "__main__":
-    socketio.run(app, debug=True)
+# if __name__ == "__main__":
+# socketio.run(app, debug=True)
