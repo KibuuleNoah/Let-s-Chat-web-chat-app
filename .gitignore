@@ -1,8 +1,8 @@
 test*
 .git/
-./application/__pycache__/ 
-./application/Auth/__pycache__/ 
-./application/Views/__pycache__/ 
-./application/Models/__pycache__/ 
-./application/functions/__pycache__/ 
-./instance/main.db
+application/__pycache__/ 
+application/Auth/__pycache__/ 
+application/Views/__pycache__/ 
+application/Models/__pycache__/ 
+application/functions/__pycache__/ 
+instance/main.db

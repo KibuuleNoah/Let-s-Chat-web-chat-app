@@ -1,7 +1,6 @@
 from flask import request, jsonify
 from flask.json import loads
 from flask_socketio import SocketIO, emit, join_room
-from socketio.zmq_manager import re
 from application import create_app
 from flask_login import current_user
 from application.Views.views import get_user_img
@@ -9,6 +8,7 @@ from application.Models.models import User, Message, Room, db
 from application.functions import convert_to_bytes, convert_to_base64
 from time import strftime
 import time
+import re
 
 joined_users = set()
 
@@ -35,7 +35,7 @@ def create_room_now(name, moto, image_data):
 
 
 def get_time_from_datetime(string):
-    print(re.search(r"\d{2}:\d{2}", str(string)).group())
+    # print(re.search(r"\d{2}:\d{2}", str(string)).group())
     return re.search(r"\d{2}:\d{2}", str(string)).group()
 
 
