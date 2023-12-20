@@ -52,6 +52,7 @@ def update_user_password(old_password, new_password):
 # updates room info like name and image
 def update_room_info(room_id, new_name, new_moto, new_image):
     room = Room.query.get(room_id)
+    print("\nready to update room info \n")
     # Room_ = Room.query.filter_by(id=room_id)
     # .update({Room.room_name: new_name})
     if room.creater_id == current_user.id:

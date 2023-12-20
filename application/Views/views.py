@@ -68,7 +68,9 @@ def profile():
 @views.route("/settings/<room_id>", methods=["POST", "GET"])
 @login_required
 def settings(room_id):
+    print("INSIDE SETTINGS")
     if request.method == "POST":
+        print("INSIDE SETTINGS POST")
         new_room_name = request.form.get("room-name", "")
         new_room_moto = request.form.get("room-moto", "")
 
@@ -81,6 +83,7 @@ def settings(room_id):
         # print("Data_1: ", new_room_image_data)
         new_room_image_bytes = convert_to_bytes(new_room_image_data.split(",", 1)[-1])
         # print("Data_2: ", new_room_image_bytes)
+        print("\ngetting ready to update\n")
         update_room_info(
             int(room_id), new_room_name, new_room_moto, new_room_image_bytes
         )
