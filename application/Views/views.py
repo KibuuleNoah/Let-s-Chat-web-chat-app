@@ -1,9 +1,9 @@
 from flask import json, render_template, request, url_for, Blueprint, flash, jsonify
 from flask_login import current_user, login_required
-
 from ..functions import *
 from ..Models.models import Message, Room, User, db
 
+# import json
 
 views = Blueprint("views", __name__, template_folder="templates", url_prefix="/vws")
 
@@ -55,7 +55,7 @@ def profile():
             # updates user photo
             User.query.filter_by(id=current_user.id).update({User.photo: image_data})
             db.session.commit()
-            return jsonify({"message": "Image uploaded successfully"})
+        # return jsonify({"message": "Image uploaded successfully"})
 
     return render_template("profile.html", user=current_user, img_data=user_img_data)
 
@@ -63,24 +63,22 @@ def profile():
 # settings route for rendering settings page
 @views.route("/settings/<room_id>", methods=["POST", "GET"])
 @login_required
-def settings(room_id):
+def room_settings(room_id):
     """
     settings route for rendering settings page
     """
     if request.method == "POST":
-        new_room_name = request.form.get("room-name", "")
-        new_room_moto = request.form.get("room-moto", "")
+        data = json.loads(request.data)
+        new_room_image = data["newImage"]
+        new_room_name = data["newRoomName"]
+        new_room_moto = data["newRoomMoto"]
 
-        # print("UPDATE", new_room_name)
-        # print("UPDATE", new_room_moto)
-        data = request.data
-        data = json.loads(data) if data else {}
-        new_room_image_data = data.get("imageData", "")
-        new_room_image_bytes = convert_to_bytes(new_room_image_data.split(",", 1)[-1])
+        # new_room_image_data = data.get("imageData", "")
+        new_room_image_bytes = convert_to_bytes(new_room_image.split(",", 1)[-1])
         update_room_info(
             int(room_id), new_room_name, new_room_moto, new_room_image_bytes
         )
-    return render_template("settings.html")
+    return render_template("roomsettings.html")
 
 
 @views.route("/delete-room", methods=["POST"])
@@ -129,3 +127,11 @@ def truct(text):
     A simple jinja filter used for shortening long text
     """
     return text[:10] + "..." if len(text) > 10 else text
+
+
+@views.app_template_filter("truct_name")
+def truct_name(text):
+    """
+    A simple jinja filter used for shortening long names
+    """
+    return text[:7] + "..." if len(text) > 6 else text

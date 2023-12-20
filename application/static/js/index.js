@@ -2,32 +2,44 @@ const messageInput = document.getElementById("message-input");
 const socketio = io({autoConnect:false});
 socketio.connect()
 
+
+// var r=confirm("Press a button!");
+// if (r==true)
+//   {
+//   x="You pressed OK!";
+//   }
+//  else
+//   {
+//   x="You pressed Cancel!";
+//   }
+
+// <dialog open>
+//   <p>Greetings, one and all!</p>
+//   <button>Ok</button><button>Maybe</button><button>Cancel</button>
+// </dialog>
+// And do what you want with it.
+//
+// document.querySelectorAll('button').forEach($button => 
+  // $button.onclick = () => document.querySelector('dialog').removeAttribute('open'))
+// https://jsfiddle.net/6nus2z
 const truct_text = (text)=>{
   return text.length > 10 ? text.slice(0,10)+"..." : text
 }
 
-//send the cropped image to the backend
-const sendToFlaskBackend = (croppedDataURL,endpoint)=> {
-  // Make an HTTP POST request to your Flask backend
-  fetch(`http://127.0.0.1:5000${endpoint}`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ imageData: croppedDataURL }),
-  })
-  .then(response => response.json())
-  .then(data => {
-    console.log('Response from Flask:', data);
-  })
-  .catch(error => {
-    console.error('Error:', error);
-  });
+const sendDataToBackend = (endpoint,data)=>{
+  fetch(endpoint,{
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data)
+    });
 }
 
+var croppedDataURL = "";
 //read an image from input and crops it then it can
 //send it via the fetch or socketio
-const cropAndSendImage = (input,endpoint=null,socket=null,args=null)=> {
+const cropImage = (input,args=null)=> {
   const file = input.files[0];
   // Check if a file is selected
   if (file) {
@@ -49,15 +61,16 @@ const cropAndSendImage = (input,endpoint=null,socket=null,args=null)=> {
         // Draw the image on the canvas with 200x200 dimensions
         ctx.drawImage(img, 0, 0, 200, 200);
         // Get the cropped image as a data URL
-        const croppedDataURL = canvas.toDataURL('image/png');
+        croppedDataURL = canvas.toDataURL('image/png');
+
         // console.log(croppedDataURL);
-        if (endpoint && !socket){
-          sendToFlaskBackend(croppedDataURL,endpoint);
-          window.location.href = "/vws/";
-        }
-        else if (socket && !endpoint){
-          socketio.emit(socket,{"imageData":croppedDataURL,args:args});
-        }
+        // if (endpoint && !socket){
+        //   sendToFlaskBackend(croppedDataURL,endpoint);
+        //   window.location.href = "/vws/";
+        // }
+        // else if (socket && !endpoint){
+        //   socketio.emit(socket,{"imageData":croppedDataURL,args:args});
+        // }
       };
     };
   }
@@ -65,8 +78,14 @@ const cropAndSendImage = (input,endpoint=null,socket=null,args=null)=> {
 
 const submitRoomUpdates = ()=>{
   let input = document.getElementById("room-image");
-  cropAndSendImage(input,window.location.pathname);
-  document.getElementById("update-room-form").submit()
+  cropImage(input,window.location.pathname);
+  let roomForm = document.forms["update-room"];
+  sendDataToBackend(window.location.href,{
+    newImage:croppedDataURL ,
+    newRoomName:roomForm["room-name"].value,
+    newRoomMoto:roomForm["room-moto"].value
+  });
+  croppedDataURL = "";
       
   window.location.href = "/vws/";
 }
@@ -77,9 +96,15 @@ const changeProfileImage = () => {
   const input = document.getElementById('img-input');
   const preview = document.getElementById('prof-img');
   const form = document.getElementById('upload-prof-img');
-  
-  cropAndSendImage(input,"/vws/profile",null);
-  input.value = ""; 
+   
+  cropImage(input,null);
+  preview.src = croppedDataURL;
+  console.log(croppedDataURL);
+  sendDataToBackend(window.location.href,{
+    imageData:croppedDataURL
+  })
+  croppedDataURL = "";
+  // input.value = ""; 
   // if (input.files && input.files[0]) {
     // Submit the form programmatically after selecting the image
     // form.submit();
@@ -235,7 +260,7 @@ const EnterChatRoom = (chatsSection,chatRoomSection)=>{
         roomTitle.style.transform = "none"
       }
       //loads room image into the chat room nav bar
-      await fetch("http://127.0.0.1:5000/GRI",{
+      await fetch(`${window.location.origin}/GRI`,{
         method:"POST",
         headers:{
           "Content-Type":"application/json"
@@ -395,9 +420,7 @@ if (document.title == "dashboard"){
         let direction = giveMessageDirection(sender_id,userId);
         console.log(msg,direction,userId)
         
-        // let sender_info = getMsgSenderInfo(sender_id);
-        // if (sender_info){
-          displayMessage(messageDiv,msgContainer,msg,time,direction,name,photo)
+        displayMessage(messageDiv,msgContainer,msg,time,direction,name,photo)
       });
     })
   })
@@ -411,7 +434,7 @@ if (document.title == "dashboard"){
 }
 //delete chat room
 const deleteRoom = (roomId)=> {
-  fetch("/vws/delete-room", {
+  fetch(`${window.location.origin}/vws/delete-room`, {
     method: "POST",
     body: JSON.stringify({ roomId: roomId }),
   }).then((_res) => {

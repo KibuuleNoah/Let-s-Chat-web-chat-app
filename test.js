@@ -139,14 +139,19 @@ const FetchGRI = async ()=>{
     headers:{
       "Content-Type":"application/json"
     },
-    body:JSON.stringify({roomName:r})
+    body:JSON.stringify({roomName:"meug"})
   })
     .then( async res => {
-      data = await res.text();
-      console.log(data);
+      data = await res.json();
+      img = data["imageData"];
+      console.log(img);
     })
 
   console.log("End");
 }
 
 FetchGRI()
+// let data = ArrayBuffer;
+ // const buffer = new ArrayBuffer(8);
+// const view = new Int32Array(buffer);
+// console.log(data)
