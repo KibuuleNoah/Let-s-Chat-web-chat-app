@@ -23,8 +23,6 @@ def create_app():
         app.app_context().push()
         db.create_all()
 
-        print("database created")
-
     login_manager = LoginManager()
     login_manager.login_view = "auth.login"
     login_manager.init_app(app)
@@ -33,9 +31,6 @@ def create_app():
     def load_user(id):
         return User.query.get(int(id))
 
-    # app.config.from_prefixed_env()
-
-    # print(app.config)
     app.register_blueprint(auth)
     app.register_blueprint(views)
     return app

@@ -4,6 +4,7 @@ from flask_login import current_user, login_required
 from ..functions import *
 from ..Models.models import Message, Room, User, db
 
+
 views = Blueprint("views", __name__, template_folder="templates", url_prefix="/vws")
 
 
@@ -16,8 +17,6 @@ def dashboard():
     rooms = Room.query.all()
     your_rooms = [rm for rm in rooms if rm.creater_id == current_user.id]
     other_rooms = [rm for rm in rooms if not (rm.creater_id == current_user.id)]
-    print(your_rooms)
-    print(other_rooms)
     return render_template(
         "index.html",
         user_name=current_user.name,
@@ -31,8 +30,10 @@ def dashboard():
 @views.route("/profile", methods=["GET", "POST"])
 @login_required
 def profile():
+    """
+    profile route. for displaying and updating user information
+    """
     user_img_data = get_user_img(current_user.id)
-    # print(user_img, "image data")
     if request.method == "POST":
         data = request.data
         data = json.loads(data) if data else {}
@@ -59,28 +60,23 @@ def profile():
     return render_template("profile.html", user=current_user, img_data=user_img_data)
 
 
-# db.session.execute(
-#     db.delete(Skilljoin).filter_by(staffid=30)
-#     )
-
-
 # settings route for rendering settings page
 @views.route("/settings/<room_id>", methods=["POST", "GET"])
 @login_required
 def settings(room_id):
+    """
+    settings route for rendering settings page
+    """
     if request.method == "POST":
         new_room_name = request.form.get("room-name", "")
         new_room_moto = request.form.get("room-moto", "")
 
-        print("UPDATE", new_room_name)
-        print("UPDATE", new_room_moto)
-        # new_room_image = request.files.get("room-image")
+        # print("UPDATE", new_room_name)
+        # print("UPDATE", new_room_moto)
         data = request.data
         data = json.loads(data) if data else {}
         new_room_image_data = data.get("imageData", "")
-        # print("Data_1: ", new_room_image_data)
         new_room_image_bytes = convert_to_bytes(new_room_image_data.split(",", 1)[-1])
-        # print("Data_2: ", new_room_image_bytes)
         update_room_info(
             int(room_id), new_room_name, new_room_moto, new_room_image_bytes
         )
@@ -106,20 +102,30 @@ def delete_room():
 
 @views.route("/GMSI", methods=["POST"])
 def get_msg_sender_info():
+    """
+    Gets massage sender infomation basing on the received user id
+    """
     data = json.loads(request.data)
-    print(data)
+    # print(data)
     sender_id = data["sender_id"]
     user = User.query.get(sender_id)
     user_name = user.name
+    # converts an image to a web base64
     user_photo = convert_to_base64(user.photo)
     return jsonify({"name": user_name, "photo": user_photo})
 
 
 @views.app_template_filter("to_base64")
 def to_base64(s):
+    """
+    A simple jinja filter to convert a byte image to a base64 data
+    """
     return convert_to_base64(s)
 
 
 @views.app_template_filter("truct")
 def truct(text):
+    """
+    A simple jinja filter used for shortening long text
+    """
     return text[:10] + "..." if len(text) > 10 else text
