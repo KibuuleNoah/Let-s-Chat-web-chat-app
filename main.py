@@ -144,5 +144,5 @@ def get_room_image():
     return jsonify({})
 
 
-if __name__ == "__main__":
-    socketio.run(app, debug=True)
+# if __name__ == "__main__":
+# socketio.run(app, debug=True)
